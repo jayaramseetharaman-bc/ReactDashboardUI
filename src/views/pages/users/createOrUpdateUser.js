@@ -382,9 +382,6 @@ const CreateUserForm = () => {
                 <CButton onClick={handleCancel} oncolor="primary" type="button">
                   Cancel
                 </CButton>
-                <CButton href="/logout" oncolor="primary" type="button">
-                  Cancel
-                </CButton>
               </CCol>
             </CForm>
           </CCardBody>
