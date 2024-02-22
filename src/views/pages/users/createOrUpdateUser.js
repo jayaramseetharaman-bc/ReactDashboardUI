@@ -3,7 +3,25 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
-import { CCardBody, CForm } from '@coreui/react'
+import {
+  CCol,
+  CForm,
+  CFormInput,
+  CFormFeedback,
+  CFormLabel,
+  CCardHeader,
+  CRow,
+  CCard,
+  CModalHeader,
+  CModal,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CFormSelect,
+  CFormCheck,
+  CButton,
+  CCardBody,
+} from '@coreui/react'
 import { CardBody } from 'react-bootstrap'
 
 const CreateUserForm = () => {
@@ -11,6 +29,7 @@ const CreateUserForm = () => {
   const [isEditMode, setIsEditMode] = useState(false)
   const [userId, setUserId] = useState(null)
   const navigate = useNavigate()
+  const [visible, setVisible] = useState(false)
 
   const roles = [
     { id: 1, name: 'Team Lead' },
@@ -29,6 +48,9 @@ const CreateUserForm = () => {
     }
   }, [])
 
+  const handleCancel = () => {
+    window.history.back()
+  }
   const fetchUserData = async (userId) => {
     try {
       const apiUrl = process.env.REACT_APP_API_URL
@@ -138,10 +160,11 @@ const CreateUserForm = () => {
             icon: 'success',
             title: 'Success',
             text: `User ${isEditMode ? 'updated' : 'created'} successfully`,
+          }).then(() => {
+            formik.resetForm()
+            setSelectedRoles([])
+            navigate('/users')
           })
-          formik.resetForm()
-          setSelectedRoles([])
-          navigate('/users')
         } else {
           throw new Error(data.message || `Failed to ${isEditMode ? 'update' : 'create'} user`)
         }
@@ -157,156 +180,217 @@ const CreateUserForm = () => {
   })
 
   return (
-    <div className="forms">
-      <form onSubmit={formik.handleSubmit} className="user-form">
-        <h2 className="title">{isEditMode ? 'Edit User' : 'Add User'} </h2>
-        <br />
-        <div className="row">
-          <div className="column">
-            <label className="label">First Name</label>
-            <br />
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              value={formik.values.firstName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.firstName && formik.errors.firstName ? (
-              <div className="error">{formik.errors.firstName}</div>
-            ) : null}
-          </div>
-          <div className="column">
-            <label className="label">Last Name</label> <br />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={formik.values.lastName}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.lastName && formik.errors.lastName ? (
-              <div className="error">{formik.errors.lastName}</div>
-            ) : null}
-          </div>
-        </div>
-        <br />
-        <div className="row">
-          <div className="column">
-            <label className="label">Mobile Number</label> <br />
-            <input
-              type="text"
-              name="mobileNumber"
-              placeholder="Mobile Number"
-              value={formik.values.mobileNumber}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.mobileNumber && formik.errors.mobileNumber ? (
-              <div className="error">{formik.errors.mobileNumber}</div>
-            ) : null}
-          </div>
-          <div className="column">
-            <label className="label">Email</label> <br />
-            <input
-              type="text"
-              name="email"
-              placeholder="Email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              disabled={isEditMode}
-            />
-            {formik.touched.email && formik.errors.email ? (
-              <div className="error">{formik.errors.email}</div>
-            ) : null}
-          </div>
-        </div>
-        <br />
-        <div className="row">
-          <div className="column">
-            <label className="label">Address</label> <br />
-            <input
-              type="text"
-              name="address"
-              placeholder="Address"
-              value={formik.values.address}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.address && formik.errors.address ? (
-              <div className="error">{formik.errors.address}</div>
-            ) : null}
-          </div>
-          <div className="column">
-            <label className="label">User Type</label>
-            <br />
-            <div>
-              <input
-                type="radio"
-                id="admin"
-                name="userTypeId"
-                value="1"
-                checked={formik.values.userTypeId === 1}
-                onChange={() => formik.setFieldValue('userTypeId', 1)}
-              />
-              <label htmlFor="admin">Admin</label>
-              &nbsp;&nbsp;&nbsp;
-              <input
-                type="radio"
-                id="user"
-                name="userTypeId"
-                value="2"
-                checked={formik.values.userTypeId === 2}
-                onChange={() => formik.setFieldValue('userTypeId', 2)}
-              />
-              <label htmlFor="user">User</label>
-            </div>
-            {formik.touched.userTypeId && formik.errors.userTypeId ? (
-              <div className="error">{formik.errors.userTypeId}</div>
-            ) : null}
-          </div>
-        </div>
-        {isEditMode && (
-          <div className="row">
-            <div className="column">
-              <input
-                type="checkbox"
-                name="isActive"
-                checked={formik.values.isActive}
-                onChange={formik.handleChange}
-              />
-              &nbsp;&nbsp;
-              <label className="label">Active</label>
-            </div>
-          </div>
-        )}
-        <div className="row">
-          <div className="column">
-            <label className="label">Role(s)</label>
-            <br />
-            {roles.map((role) => (
-              <div key={role.id}>
-                <input
-                  type="checkbox"
-                  name="roleIds"
-                  value={role.id}
-                  checked={selectedRoles && selectedRoles.includes(role.id)}
-                  onChange={() => handleRoleChange(role.id)}
+    <CRow>
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardBody>
+            <CForm className="row g-3" onSubmit={formik.handleSubmit}>
+              <CCardHeader>
+                <strong>{isEditMode ? 'Edit User' : 'Add User'}</strong>
+              </CCardHeader>
+              {/* <CCol md={6} style={{ backgroundColor: '#f4f4f4' }}> */}
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  id="firstName"
+                  label="First Name"
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.firstName && !!formik.errors.firstName}
+                  required
                 />
-                <label htmlFor={`role-${role.id}`}>{role.name}</label>
-              </div>
-            ))}
-            {formik.touched.roleIds && formik.errors.roleIds ? (
-              <div className="error">{formik.errors.roleIds}</div>
-            ) : null}
-          </div>
-        </div>
-        <button type="submit">{isEditMode ? 'Update' : 'Create'}</button>
-      </form>
-    </div>
+                <CFormFeedback invalid>{formik.errors.firstName}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  id="lastName"
+                  label="Last Name"
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.lastName && !!formik.errors.lastName}
+                  required
+                />
+                <CFormFeedback invalid>{formik.errors.lastName}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  id="mobileNumber"
+                  label="Mobile Number"
+                  value={formik.values.mobileNumber}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.mobileNumber && !!formik.errors.mobileNumber}
+                  required
+                />
+                <CFormFeedback invalid>{formik.errors.mobileNumber}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  id="email"
+                  label="Email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={isEditMode}
+                  invalid={formik.touched.email && !!formik.errors.email}
+                  required
+                />
+                <CFormFeedback invalid>{formik.errors.email}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <CFormInput
+                  type="text"
+                  id="address"
+                  label="Address"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.address && !!formik.errors.address}
+                  required
+                />
+                <CFormFeedback invalid>{formik.errors.address}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="userTypeId">User Type</CFormLabel>
+                <CFormSelect
+                  id="userTypeId"
+                  value={formik.values.userTypeId}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.userTypeId && !!formik.errors.userTypeId}
+                  required
+                >
+                  <option value="">Select User Type</option>
+                  <option value="1">Admin</option>
+                  <option value="2">User</option>
+                </CFormSelect>
+                <CFormFeedback invalid>{formik.errors.userTypeId}</CFormFeedback>
+              </CCol>
+              <CCol md={6}>
+                <label className="label">Role(s)</label>
+                <br />
+                {roles.map((role) => (
+                  <div key={role.id} style={{ marginBottom: '6px' }}>
+                    <input
+                      type="checkbox"
+                      name="roleIds"
+                      value={role.id}
+                      checked={selectedRoles && selectedRoles.includes(role.id)}
+                      onChange={() => handleRoleChange(role.id)}
+                    />
+                    <label htmlFor={`role-${role.id}`} style={{ marginLeft: '7px' }}>
+                      {role.name}
+                    </label>
+                  </div>
+                ))}
+                {formik.touched.roleIds && formik.errors.roleIds ? (
+                  <div className="error">{formik.errors.roleIds}</div>
+                ) : null}
+              </CCol>
+              {isEditMode && (
+                <CCol xs={6}>
+                  <CFormCheck
+                    type="checkbox"
+                    id="isActive"
+                    label="Active (Check to indicate that the user is active)"
+                    checked={formik.values.isActive}
+                    onChange={formik.handleChange}
+                  />
+                </CCol>
+              )}
+              <CCol xs={12}>
+                <CFormCheck
+                  type="checkbox"
+                  id="agreeChanges"
+                  label={
+                    <>
+                      Agree to terms and conditions{' '}
+                      <span
+                        style={{ color: 'blue', cursor: 'pointer' }}
+                        onClick={() => setVisible(!visible)}
+                      >
+                        (view terms and conditions)
+                      </span>
+                    </>
+                  }
+                  checked={formik.values.agreeChanges}
+                  onChange={formik.handleChange}
+                  required
+                />
+              </CCol>
+              {visible && (
+                <CCol xs={12}>
+                  <CModal
+                    backdrop="static"
+                    visible={visible}
+                    onClose={() => setVisible(false)}
+                    aria-labelledby="StaticBackdropExampleLabel"
+                  >
+                    <CModalHeader>
+                      <CModalTitle id="StaticBackdropExampleLabel">
+                        Terms and conditions
+                      </CModalTitle>
+                    </CModalHeader>
+                    <CModalBody>
+                      <p>
+                        1. Agreement By accessing or using the application, you agree to be bound by
+                        these Terms and Conditions.
+                      </p>
+                      <p>
+                        2. User Responsibilities You are responsible for maintaining the
+                        confidentiality of your account and password. You are responsible for all
+                        activities that occur under your account.
+                      </p>
+                      <p>
+                        3. Privacy Your privacy is important to us. Please review our Privacy Policy
+                        to understand how we collect, use, and disclose information.
+                      </p>
+                      <p>
+                        4. Usage You may use the application for lawful purposes only. You agree not
+                        to use the application for any unlawful purpose or in any way that violates
+                        these Terms and Conditions.
+                      </p>
+                      <p>
+                        5. Changes We reserve the right to modify or replace these Terms and
+                        Conditions at any time. Your continued use of the application after any such
+                        changes constitute acceptance of the new Terms and Conditions.
+                      </p>
+                      <p>
+                        6. Contact Us If you have any questions about these Terms and Conditions,
+                        please contact us.
+                      </p>
+                    </CModalBody>
+                    <CModalFooter>
+                      <CButton color="secondary" onClick={() => setVisible(false)}>
+                        Close
+                      </CButton>
+                    </CModalFooter>
+                  </CModal>
+                </CCol>
+              )}
+              <br /> <br />
+              <CCol xs={12}>
+                <CButton color="primary" type="submit">
+                  {isEditMode ? 'Update' : 'Create'}
+                </CButton>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <CButton onClick={handleCancel} oncolor="primary" type="button">
+                  Cancel
+                </CButton>
+                <CButton href="/logout" oncolor="primary" type="button">
+                  Cancel
+                </CButton>
+              </CCol>
+            </CForm>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
   )
 }
 
