@@ -16,6 +16,7 @@ import {
   CModalFooter,
 } from '@coreui/react'
 import { cilUserPlus } from '@coreui/icons'
+import { darken, lighten, useTheme } from '@mui/material'
 
 function UserDetails() {
   const navigate = useNavigate()
@@ -31,6 +32,10 @@ function UserDetails() {
   const [sorting, setSorting] = useState([])
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
+  const theme = useTheme()
+  const baseBackgroundColor =
+    theme.palette.mode === 'dark' ? 'rgba(3, 44, 43, 1)' : 'rgba(244, 255, 233, 1)'
+  // const baseBackgroundColor = 'rgba(213, 241, 222, 255)'
 
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
     try {
@@ -109,10 +114,18 @@ function UserDetails() {
         // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => (
           <div>
-            <Link to={`adduser?user-id=${renderedCellValue}`} className="me-3">
+            <Link
+              to={`adduser?user-id=${renderedCellValue}`}
+              style={{ fontSize: '1rem' }}
+              className="me-1"
+            >
               Edit
             </Link>
-            <CButton color="link" onClick={() => HandleDeleteButtonClick(renderedCellValue)}>
+            <CButton
+              className="mb-1"
+              color="link"
+              onClick={() => HandleDeleteButtonClick(renderedCellValue)}
+            >
               Delete
             </CButton>
           </div>
@@ -151,23 +164,35 @@ function UserDetails() {
       },
     },
     muiTableBodyProps: {
-      sx: {
-        //stripe the rows, make odd rows a darker color
-        '& td:nth-of-type(odd)': {
-          backgroundColor: '#f5f5f5',
+      sx: (theme) => ({
+        '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]) > td': {
+          backgroundColor: darken(baseBackgroundColor, 0.1),
         },
-      },
+        '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
+          backgroundColor: darken(baseBackgroundColor, 0.2),
+        },
+        '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]) > td': {
+          backgroundColor: lighten(baseBackgroundColor, 0.1),
+        },
+        '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
+          backgroundColor: darken(baseBackgroundColor, 0.2),
+        },
+      }),
     },
-    muiTableBodyCellProps: {
-      sx: {
-        borderRight: '1px solid #e0e0e0', //add a border between columns
-      },
-    },
-
+    // muiTableBodyCellProps: {
+    //   sx: {
+    //     borderRight: '1px solid #e0e0e0', //add a border between columns
+    //   },
+    // },
     muiTablePaperProps: {
       elevation: 0, //change the mui box shadow
       //customize paper styles
     },
+    mrtTheme: (theme) => ({
+      baseBackgroundColor: baseBackgroundColor,
+      // draggingBorderColor: theme.palette.secondary.main,
+    }),
+
     state: {
       pagination,
       globalFilter,
@@ -179,12 +204,12 @@ function UserDetails() {
     <CCard className="mb-4">
       <CCardHeader>Users List</CCardHeader>
       <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-        <CButton color="primary" className="me-md-2 mt-2" onClick={() => HandleAddButtonClick()}>
+        <CButton color="primary" className="me-md-3 mt-2" onClick={() => HandleAddButtonClick()}>
           <CIcon icon={cilUserPlus} className="me-2" />
           Add user
         </CButton>
       </div>
-      <div>
+      <CCardBody>
         <MaterialReactTable table={table} />
         <CModal
           alignment="center"
@@ -205,7 +230,7 @@ function UserDetails() {
             </CButton>
           </CModalFooter>
         </CModal>
-      </div>
+      </CCardBody>
     </CCard>
   )
 }
