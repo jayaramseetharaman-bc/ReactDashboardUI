@@ -2,6 +2,7 @@ import React, { Component, Suspense } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import './scss/style.scss'
 import MainContent from './MainContent'
+import SignInPage from './layout/SignInPage'
 
 const loading = (
   <div className="pt-3 text-center">
@@ -29,6 +30,7 @@ class App extends Component {
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
             <Route path="*" name="Home" element={<DefaultLayout />} />
+            <Route exact path="/logout" name="Logout" element={<SignInPage />} />
             <Route path="/" element={<MainContent />} />
           </Routes>
         </Suspense>

@@ -40,7 +40,7 @@ const AppHeaderDropdown = () => {
 
   const handleLogout = () => {
     instance.logoutRedirect({
-      postLogoutRedirectUri: '/',
+      postLogoutRedirectUri: '/#/logout',
     })
   }
 
