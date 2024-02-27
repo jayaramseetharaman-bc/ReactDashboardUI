@@ -22,6 +22,7 @@ import {
   CButton,
   CCardBody,
 } from '@coreui/react'
+import Select from 'react-select'
 // import { CardBody } from 'react-bootstrap'
 
 const CreateUserForm = () => {
@@ -107,7 +108,9 @@ const CreateUserForm = () => {
     email: Yup.string().email('Invalid email address').required('Email is required'),
     address: Yup.string().required('Address is required'),
     userTypeId: Yup.number().min(1, 'User Type is required'),
-    roleIds: Yup.array().min(1, 'Please select at least one Role'),
+    roleIds: Yup.array()
+      .min(1, 'Please select at least one Role')
+      .required('Please select at least one Role'),
     isActive: Yup.boolean(),
     termsAndConditions: Yup.boolean()
       .test(
@@ -286,27 +289,24 @@ const CreateUserForm = () => {
               </CCol>
               <CCol md={6}>
                 <CFormLabel htmlFor="roleIds">Role(s)</CFormLabel>
-                <CFormSelect
-                  multiple
-                  id="roleIds"
-                  value={selectedRoles}
-                  onChange={(e) => {
-                    const selectedOptions = Array.from(e.target.selectedOptions, (item) =>
-                      parseInt(item.value),
-                    )
-                    setSelectedRoles(selectedOptions)
-                    formik.setFieldValue('roleIds', selectedOptions)
+                <Select
+                  isMulti
+                  options={roles.map((role) => ({ value: role.id, label: role.name }))}
+                  value={selectedRoles.map((roleId) => ({
+                    value: roleId,
+                    label: roles.find((role) => role.id === roleId).name,
+                  }))}
+                  onChange={(selectedOptions) => {
+                    const selectedRoleIds = selectedOptions.map((option) => option.value)
+                    setSelectedRoles(selectedRoleIds)
+                    formik.setFieldValue('roleIds', selectedRoleIds)
                   }}
-                  onBlur={formik.handleBlur}
-                  invalid={formik.touched.roleIds && !!formik.errors.roleIds}
-                >
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  ))}
-                </CFormSelect>
-                <CFormFeedback invalid>{formik.errors.roleIds}</CFormFeedback>
+                  onBlur={formik.handleBlur('roleIds')}
+                  className={formik.touched.roleIds && formik.errors.roleIds ? 'is-invalid' : ''}
+                />
+                {formik.touched.roleIds && formik.errors.roleIds && (
+                  <div className="invalid-feedback">{formik.errors.roleIds}</div>
+                )}
               </CCol>
               {isEditMode && (
                 <CCol xs={6}>

@@ -1,5 +1,5 @@
-import React from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import PropTypes from 'prop-types'
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import { GetUserDetailsWithPagination, DeleteUserById } from 'src/services/httpService'
 import { Link, useNavigate } from 'react-router-dom'
@@ -17,6 +17,7 @@ import {
 } from '@coreui/react'
 import { cilPlus } from '@coreui/icons'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'
+import Accordion from 'react-bootstrap/Accordion'
 
 function UserDetails() {
   const navigate = useNavigate()
@@ -37,6 +38,13 @@ function UserDetails() {
   //   theme.palette.mode === 'dark' ? 'rgba(3, 44, 43, 1)' : 'rgba(244, 255, 233, 1)'
   // const baseBackgroundColor = 'rgba(213, 241, 222, 255)'
 
+  const roles = [
+    { id: 1, name: 'Team Lead' },
+    { id: 2, name: 'Manager' },
+    { id: 3, name: 'Consultant' },
+    { id: 4, name: 'Software Engineer' },
+  ]
+
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
     try {
       console.log(sorting)
@@ -53,6 +61,7 @@ function UserDetails() {
       console.log(err)
     }
   }
+
   async function HandleDeleteUser(userId) {
     try {
       await DeleteUserById(userId)
@@ -66,6 +75,7 @@ function UserDetails() {
     setUserIdToDelete(userId)
     setVisible(true)
   }
+
   function HandleAddButtonClick() {
     navigate('/users/adduser')
   }
@@ -101,7 +111,47 @@ function UserDetails() {
         size: 150,
         // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => {
-          return <span>{renderedCellValue ? 'Yes' : 'No'}</span>
+          return (
+            <span>
+              {renderedCellValue ? (
+                <span
+                  className="badge"
+                  style={{ backgroundColor: 'Green', color: 'white', fontSize: '13px' }}
+                >
+                  Yes
+                </span>
+              ) : (
+                <span
+                  className="badge"
+                  style={{ backgroundColor: 'Red', color: 'white', fontSize: '13px' }}
+                >
+                  No
+                </span>
+              )}
+            </span>
+          )
+        },
+        enableSorting: false,
+        enableColumnActions: false,
+      },
+      {
+        accessorKey: 'roleIds',
+        header: 'Roles',
+        size: 200,
+        Cell: ({ renderedCellValue }) => {
+          return (
+            <Accordion>
+              <Accordion.Item eventKey="roles">
+                <Accordion.Header>Roles</Accordion.Header>
+                <Accordion.Body>
+                  {renderedCellValue.map((roleId) => {
+                    const role = roles.find((role) => role.id === roleId)
+                    return <div key={roleId}>{role.name}</div>
+                  })}
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          )
         },
         enableSorting: false,
         enableColumnActions: false,
@@ -234,4 +284,9 @@ function UserDetails() {
     </CCard>
   )
 }
+
+UserDetails.propTypes = {
+  renderedCellValue: PropTypes.any,
+}
+
 export default UserDetails
