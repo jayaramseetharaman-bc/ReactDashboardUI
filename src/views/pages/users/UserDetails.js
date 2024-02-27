@@ -14,9 +14,17 @@ import {
   CModalTitle,
   CModalBody,
   CModalFooter,
+  CAccordion,
+  CAccordionItem,
+  CAccordionBody,
+  CAccordionHeader,
+  CInputGroup,
+  CInputGroupText,
+  CFormInput,
 } from '@coreui/react'
 import { cilPlus } from '@coreui/icons'
-import { FaEdit, FaTrashAlt } from 'react-icons/fa'
+import { FaEdit, FaTrashAlt, FaSearch } from 'react-icons/fa'
+import Select from 'react-select'
 
 function UserDetails() {
   const navigate = useNavigate()
@@ -32,16 +40,17 @@ function UserDetails() {
   const [sorting, setSorting] = useState([])
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
-  // const theme = useTheme()
-  // const baseBackgroundColor =
-  //   theme.palette.mode === 'dark' ? 'rgba(3, 44, 43, 1)' : 'rgba(244, 255, 233, 1)'
-  // const baseBackgroundColor = 'rgba(213, 241, 222, 255)'
+  const [selectedSearchOptions, setselectedSearchOptions] = useState([])
 
   const roles = [
     { id: 1, name: 'Team Lead' },
     { id: 2, name: 'Manager' },
     { id: 3, name: 'Consultant' },
     { id: 4, name: 'Software Engineer' },
+  ]
+  const searchByOptions = [
+    { id: 1, name: 'Status' },
+    { id: 2, name: 'Roles' },
   ]
 
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
@@ -196,7 +205,7 @@ function UserDetails() {
   const table = useMaterialReactTable({
     columns,
     data: userData.userList,
-    initialState: { showGlobalFilter: true },
+    // initialState: { showGlobalFilter: true },
     enableGlobalFilter: false,
     enableColumnFilters: false,
     enableGlobalFilterModes: false,
@@ -213,43 +222,6 @@ function UserDetails() {
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    // muiTableHeadProps: {
-    //   sx: {
-    //     borderRight: '1px solid #e0e0e0', //add a border between columns
-    //     '& tr:nth-of-type(odd)': {
-    //       backgroundColor: '#9da5b1',
-    //     },
-    //   },
-    // },
-    // muiTableBodyProps: {
-    //   sx: (theme) => ({
-    //     '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]) > td': {
-    //       backgroundColor: darken(baseBackgroundColor, 0.1),
-    //     },
-    //     '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
-    //       backgroundColor: darken(baseBackgroundColor, 0.2),
-    //     },
-    //     '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]) > td': {
-    //       backgroundColor: lighten(baseBackgroundColor, 0.1),
-    //     },
-    //     '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
-    //       backgroundColor: darken(baseBackgroundColor, 0.2),
-    //     },
-    //   }),
-    // },
-    // muiTableBodyCellProps: {
-    //   sx: {
-    //     borderRight: '1px solid #e0e0e0', //add a border between columns
-    //   },
-    // },
-    // muiTablePaperProps: {
-    //   elevation: 0, //change the mui box shadow
-    //   //customize paper styles
-    // },
-    // mrtTheme: (theme) => ({
-    //   baseBackgroundColor: baseBackgroundColor,
-    //   // draggingBorderColor: theme.palette.secondary.main,
-    // }),
 
     state: {
       pagination,
@@ -259,37 +231,86 @@ function UserDetails() {
   })
 
   return (
-    <CCard className="mb-4">
-      <CCardHeader className="d-flex justify-content-between align-items-center">
-        <div>Users</div>
-        <CButton color="primary" className="me-md-3 mt-2" onClick={() => HandleAddButtonClick()}>
-          <CIcon icon={cilPlus} className="me-2" />
-          Add
-        </CButton>
-      </CCardHeader>
-      <div>
-        <MaterialReactTable table={table} />
-        <CModal
-          alignment="center"
-          visible={visible}
-          onClose={() => setVisible(false)}
-          aria-labelledby="VerticallyCenteredExample"
-        >
-          <CModalHeader>
-            <CModalTitle id="VerticallyCenteredExample">Delete User Confirmation</CModalTitle>
-          </CModalHeader>
-          <CModalBody>Do you really want to delete the user?</CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={() => setVisible(false)}>
-              Close
-            </CButton>
-            <CButton color="danger" onClick={() => HandleDeleteUser(userIdToDelete)}>
-              Delete
-            </CButton>
-          </CModalFooter>
-        </CModal>
-      </div>
-    </CCard>
+    <>
+      <CCard className="mb-2">
+        <CCardHeader>
+          <CAccordion flush activeItemKey={2}>
+            <CAccordionItem itemKey={1}>
+              <CAccordionHeader>Search</CAccordionHeader>
+              <CAccordionBody>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <CInputGroup>
+                      <CInputGroupText id="addon-wrapping">
+                        <FaSearch />
+                      </CInputGroupText>
+                      <CFormInput
+                        placeholder="Search"
+                        aria-label="Search"
+                        aria-describedby="addon-wrapping"
+                      />
+                      <div className="ms-2">
+                        <CButton className="btn btn-primary " color="primary">
+                          Search
+                        </CButton>
+                        <CButton className="btn btn-primary ms-2" color="primary">
+                          Clear
+                        </CButton>
+                      </div>
+                    </CInputGroup>
+                  </div>
+                  <div className="ms-md-3 mt-2 d-flex align-items-center">
+                    <div className="me-3">Search By</div>
+                    <Select
+                      isMulti
+                      options={searchByOptions.map((searchby) => ({
+                        value: searchby.id,
+                        label: searchby.name,
+                      }))}
+                      onChange={(selectedOptions) => {
+                        const selectedSearchOptions = selectedOptions.map((option) => option.value)
+                        setselectedSearchOptions(selectedSearchOptions)
+                      }}
+                    />
+                  </div>
+                </div>
+              </CAccordionBody>
+            </CAccordionItem>
+          </CAccordion>
+        </CCardHeader>
+      </CCard>
+      <CCard className="mb-4">
+        <CCardHeader className="d-flex justify-content-between align-items-center">
+          <div>Users</div>
+          <CButton color="primary" className="me-md-3 mt-2" onClick={() => HandleAddButtonClick()}>
+            <CIcon icon={cilPlus} className="me-2" />
+            Add
+          </CButton>
+        </CCardHeader>
+        <div>
+          <MaterialReactTable table={table} />
+          <CModal
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
+            aria-labelledby="VerticallyCenteredExample"
+          >
+            <CModalHeader>
+              <CModalTitle id="VerticallyCenteredExample">Delete User Confirmation</CModalTitle>
+            </CModalHeader>
+            <CModalBody>Do you really want to delete the user?</CModalBody>
+            <CModalFooter>
+              <CButton color="secondary" onClick={() => setVisible(false)}>
+                Close
+              </CButton>
+              <CButton color="danger" onClick={() => HandleDeleteUser(userIdToDelete)}>
+                Delete
+              </CButton>
+            </CModalFooter>
+          </CModal>
+        </div>
+      </CCard>
+    </>
   )
 }
 
