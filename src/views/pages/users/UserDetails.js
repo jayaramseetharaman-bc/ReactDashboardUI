@@ -115,7 +115,7 @@ function UserDetails() {
         Cell: ({ renderedCellValue }) => (
           <div>
             <Link
-              to={`adduser?user-id=${renderedCellValue}`}
+              to={`edituser?user-id=${renderedCellValue}`}
               style={{ fontSize: '1rem' }}
               className="me-1"
             >
