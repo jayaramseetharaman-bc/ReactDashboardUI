@@ -15,8 +15,8 @@ import {
   CModalBody,
   CModalFooter,
 } from '@coreui/react'
-import { cilUserPlus } from '@coreui/icons'
-import { darken, lighten, useTheme } from '@mui/material'
+import { cilPlus } from '@coreui/icons'
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'
 
 function UserDetails() {
   const navigate = useNavigate()
@@ -32,9 +32,9 @@ function UserDetails() {
   const [sorting, setSorting] = useState([])
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
-  const theme = useTheme()
-  const baseBackgroundColor =
-    theme.palette.mode === 'dark' ? 'rgba(3, 44, 43, 1)' : 'rgba(244, 255, 233, 1)'
+  // const theme = useTheme()
+  // const baseBackgroundColor =
+  //   theme.palette.mode === 'dark' ? 'rgba(3, 44, 43, 1)' : 'rgba(244, 255, 233, 1)'
   // const baseBackgroundColor = 'rgba(213, 241, 222, 255)'
 
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
@@ -101,7 +101,7 @@ function UserDetails() {
         size: 150,
         // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => {
-          return <span>{'' + renderedCellValue}</span>
+          return <span>{renderedCellValue ? 'Yes' : 'No'}</span>
         },
         enableSorting: false,
         enableColumnActions: false,
@@ -119,14 +119,14 @@ function UserDetails() {
               style={{ fontSize: '1rem' }}
               className="me-1"
             >
-              Edit
+              <FaEdit />
             </Link>
             <CButton
               className="mb-1"
               color="link"
               onClick={() => HandleDeleteButtonClick(renderedCellValue)}
             >
-              Delete
+              <FaTrashAlt />
             </CButton>
           </div>
         ),
@@ -139,7 +139,7 @@ function UserDetails() {
     columns,
     data: userData.userList,
     initialState: { showGlobalFilter: true },
-    // enableGlobalFilter:false,
+    enableGlobalFilter: false,
     enableColumnFilters: false,
     enableGlobalFilterModes: false,
     enableFacetedValues: false,
@@ -155,43 +155,43 @@ function UserDetails() {
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
-    muiTableHeadProps: {
-      sx: {
-        borderRight: '1px solid #e0e0e0', //add a border between columns
-        '& tr:nth-of-type(odd)': {
-          backgroundColor: '#9da5b1',
-        },
-      },
-    },
-    muiTableBodyProps: {
-      sx: (theme) => ({
-        '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]) > td': {
-          backgroundColor: darken(baseBackgroundColor, 0.1),
-        },
-        '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
-          backgroundColor: darken(baseBackgroundColor, 0.2),
-        },
-        '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]) > td': {
-          backgroundColor: lighten(baseBackgroundColor, 0.1),
-        },
-        '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
-          backgroundColor: darken(baseBackgroundColor, 0.2),
-        },
-      }),
-    },
+    // muiTableHeadProps: {
+    //   sx: {
+    //     borderRight: '1px solid #e0e0e0', //add a border between columns
+    //     '& tr:nth-of-type(odd)': {
+    //       backgroundColor: '#9da5b1',
+    //     },
+    //   },
+    // },
+    // muiTableBodyProps: {
+    //   sx: (theme) => ({
+    //     '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]) > td': {
+    //       backgroundColor: darken(baseBackgroundColor, 0.1),
+    //     },
+    //     '& tr:nth-of-type(odd):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
+    //       backgroundColor: darken(baseBackgroundColor, 0.2),
+    //     },
+    //     '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]) > td': {
+    //       backgroundColor: lighten(baseBackgroundColor, 0.1),
+    //     },
+    //     '& tr:nth-of-type(even):not([data-selected="true"]):not([data-pinned="true"]):hover > td': {
+    //       backgroundColor: darken(baseBackgroundColor, 0.2),
+    //     },
+    //   }),
+    // },
     // muiTableBodyCellProps: {
     //   sx: {
     //     borderRight: '1px solid #e0e0e0', //add a border between columns
     //   },
     // },
-    muiTablePaperProps: {
-      elevation: 0, //change the mui box shadow
-      //customize paper styles
-    },
-    mrtTheme: (theme) => ({
-      baseBackgroundColor: baseBackgroundColor,
-      // draggingBorderColor: theme.palette.secondary.main,
-    }),
+    // muiTablePaperProps: {
+    //   elevation: 0, //change the mui box shadow
+    //   //customize paper styles
+    // },
+    // mrtTheme: (theme) => ({
+    //   baseBackgroundColor: baseBackgroundColor,
+    //   // draggingBorderColor: theme.palette.secondary.main,
+    // }),
 
     state: {
       pagination,
@@ -202,14 +202,14 @@ function UserDetails() {
 
   return (
     <CCard className="mb-4">
-      <CCardHeader>Users List</CCardHeader>
-      <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+      <CCardHeader className="d-flex justify-content-between align-items-center">
+        <div>Users</div>
         <CButton color="primary" className="me-md-3 mt-2" onClick={() => HandleAddButtonClick()}>
-          <CIcon icon={cilUserPlus} className="me-2" />
-          Add user
+          <CIcon icon={cilPlus} className="me-2" />
+          Add
         </CButton>
-      </div>
-      <CCardBody>
+      </CCardHeader>
+      <div>
         <MaterialReactTable table={table} />
         <CModal
           alignment="center"
@@ -230,7 +230,7 @@ function UserDetails() {
             </CButton>
           </CModalFooter>
         </CModal>
-      </CCardBody>
+      </div>
     </CCard>
   )
 }
