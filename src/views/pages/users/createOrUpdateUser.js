@@ -91,14 +91,31 @@ const CreateUserForm = () => {
   }
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First Name is required'),
-    lastName: Yup.string().required('Last Name is required'),
-    mobileNumber: Yup.string().required('Mobile Number is required'),
+    firstName: Yup.string()
+      .required('First Name is required')
+      .matches(/^[a-zA-Z]+$/, 'First Name should only contain alphabetic characters')
+      .min(2, 'First Name should be at least 2 characters long')
+      .max(50, 'First Name should not exceed 50 characters'),
+    lastName: Yup.string()
+      .required('Last Name is required')
+      .matches(/^[a-zA-Z]+$/, 'Last Name should only contain alphabetic characters')
+      .min(2, 'Last Name should be at least 2 characters long')
+      .max(50, 'Last Name should not exceed 50 characters'),
+    mobileNumber: Yup.string()
+      .required('Mobile Number is required')
+      .matches(/^\d{10}$/, 'Mobile Number should be a 10-digit number'),
     email: Yup.string().email('Invalid email address').required('Email is required'),
     address: Yup.string().required('Address is required'),
     userTypeId: Yup.number().min(1, 'User Type is required'),
     roleIds: Yup.array().min(1, 'Please select at least one Role'),
     isActive: Yup.boolean(),
+    termsAndConditions: Yup.boolean()
+      .test(
+        'is-checked',
+        'Please agree to the terms and conditions before saving',
+        (value) => value === true,
+      )
+      .required('Please agree to the terms and conditions before saving'),
   })
 
   const formik = useFormik({
@@ -111,6 +128,7 @@ const CreateUserForm = () => {
       userTypeId: 0,
       roleIds: [],
       isActive: false,
+      termsAndConditions: false,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
@@ -155,6 +173,7 @@ const CreateUserForm = () => {
         })
 
         const data = await response.json()
+
         if (response.ok) {
           Swal.fire({
             icon: 'success',
@@ -198,7 +217,6 @@ const CreateUserForm = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   invalid={formik.touched.firstName && !!formik.errors.firstName}
-                  required
                 />
                 <CFormFeedback invalid>{formik.errors.firstName}</CFormFeedback>
               </CCol>
@@ -211,7 +229,6 @@ const CreateUserForm = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   invalid={formik.touched.lastName && !!formik.errors.lastName}
-                  required
                 />
                 <CFormFeedback invalid>{formik.errors.lastName}</CFormFeedback>
               </CCol>
@@ -224,7 +241,6 @@ const CreateUserForm = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   invalid={formik.touched.mobileNumber && !!formik.errors.mobileNumber}
-                  required
                 />
                 <CFormFeedback invalid>{formik.errors.mobileNumber}</CFormFeedback>
               </CCol>
@@ -238,7 +254,6 @@ const CreateUserForm = () => {
                   onBlur={formik.handleBlur}
                   disabled={isEditMode}
                   invalid={formik.touched.email && !!formik.errors.email}
-                  required
                 />
                 <CFormFeedback invalid>{formik.errors.email}</CFormFeedback>
               </CCol>
@@ -251,7 +266,6 @@ const CreateUserForm = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   invalid={formik.touched.address && !!formik.errors.address}
-                  required
                 />
                 <CFormFeedback invalid>{formik.errors.address}</CFormFeedback>
               </CCol>
@@ -263,7 +277,6 @@ const CreateUserForm = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   invalid={formik.touched.userTypeId && !!formik.errors.userTypeId}
-                  required
                 >
                   <option value="">Select User Type</option>
                   <option value="1">Admin</option>
@@ -272,25 +285,28 @@ const CreateUserForm = () => {
                 <CFormFeedback invalid>{formik.errors.userTypeId}</CFormFeedback>
               </CCol>
               <CCol md={6}>
-                <label className="label">Role(s)</label>
-                <br />
-                {roles.map((role) => (
-                  <div key={role.id} style={{ marginBottom: '6px' }}>
-                    <input
-                      type="checkbox"
-                      name="roleIds"
-                      value={role.id}
-                      checked={selectedRoles && selectedRoles.includes(role.id)}
-                      onChange={() => handleRoleChange(role.id)}
-                    />
-                    <label htmlFor={`role-${role.id}`} style={{ marginLeft: '7px' }}>
+                <CFormLabel htmlFor="roleIds">Role(s)</CFormLabel>
+                <CFormSelect
+                  multiple
+                  id="roleIds"
+                  value={selectedRoles}
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(e.target.selectedOptions, (item) =>
+                      parseInt(item.value),
+                    )
+                    setSelectedRoles(selectedOptions)
+                    formik.setFieldValue('roleIds', selectedOptions)
+                  }}
+                  onBlur={formik.handleBlur}
+                  invalid={formik.touched.roleIds && !!formik.errors.roleIds}
+                >
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
                       {role.name}
-                    </label>
-                  </div>
-                ))}
-                {formik.touched.roleIds && formik.errors.roleIds ? (
-                  <div className="error">{formik.errors.roleIds}</div>
-                ) : null}
+                    </option>
+                  ))}
+                </CFormSelect>
+                <CFormFeedback invalid>{formik.errors.roleIds}</CFormFeedback>
               </CCol>
               {isEditMode && (
                 <CCol xs={6}>
@@ -306,7 +322,7 @@ const CreateUserForm = () => {
               <CCol xs={12}>
                 <CFormCheck
                   type="checkbox"
-                  id="agreeChanges"
+                  id="termsAndConditions"
                   label={
                     <>
                       Agree to terms and conditions{' '}
@@ -318,10 +334,16 @@ const CreateUserForm = () => {
                       </span>
                     </>
                   }
-                  checked={formik.values.agreeChanges}
-                  onChange={formik.handleChange}
-                  required
+                  checked={formik.values.termsAndConditions}
+                  onChange={() =>
+                    formik.setFieldValue('termsAndConditions', !formik.values.termsAndConditions)
+                  }
+                  invalid={formik.touched.termsAndConditions && formik.errors.termsAndConditions}
+                  required={isEditMode}
                 />
+                <CFormFeedback className="text-danger" invalid>
+                  {formik.errors.termsAndConditions}
+                </CFormFeedback>
               </CCol>
               {visible && (
                 <CCol xs={12}>
@@ -376,7 +398,7 @@ const CreateUserForm = () => {
               <br /> <br />
               <CCol xs={12}>
                 <CButton color="primary" type="submit">
-                  {isEditMode ? 'Update' : 'Create'}
+                  Save
                 </CButton>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <CButton onClick={handleCancel} oncolor="primary" type="button">
