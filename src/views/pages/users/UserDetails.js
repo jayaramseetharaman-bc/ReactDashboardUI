@@ -17,7 +17,6 @@ import {
 } from '@coreui/react'
 import { cilPlus } from '@coreui/icons'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'
-import Accordion from 'react-bootstrap/Accordion'
 
 function UserDetails() {
   const navigate = useNavigate()
@@ -139,18 +138,27 @@ function UserDetails() {
         header: 'Roles',
         size: 200,
         Cell: ({ renderedCellValue }) => {
+          const [isRolesOpen, setIsRolesOpen] = useState(false)
           return (
-            <Accordion>
-              <Accordion.Item eventKey="roles">
-                <Accordion.Header>Roles</Accordion.Header>
-                <Accordion.Body>
+            <>
+              <CButton
+                className="btn-lg"
+                color="link"
+                style={{ fontSize: '13px', marginLeft: '-15px' }}
+                onClick={() => setIsRolesOpen(!isRolesOpen)}
+              >
+                {isRolesOpen ? 'Hide Roles' : 'Show Roles'}
+              </CButton>
+
+              {isRolesOpen && (
+                <div>
                   {renderedCellValue.map((roleId) => {
                     const role = roles.find((role) => role.id === roleId)
                     return <div key={roleId}>{role.name}</div>
                   })}
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
+                </div>
+              )}
+            </>
           )
         },
         enableSorting: false,
