@@ -10,13 +10,13 @@ import {
   CCardText,
   CCardTitle,
 } from '@coreui/react'
+import { useNavigate } from 'react-router-dom'
 
 const SignInPage = () => {
+  const navigate = useNavigate()
   const { instance } = useMsal()
   const handleSignIn = () => {
-    instance.loginRedirect(loginRequest).catch((e) => {
-      console.log(e)
-    })
+    navigate('/')
   }
   return (
     <>

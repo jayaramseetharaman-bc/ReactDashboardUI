@@ -22,7 +22,7 @@ import {
   CButton,
   CCardBody,
 } from '@coreui/react'
-import { CardBody } from 'react-bootstrap'
+// import { CardBody } from 'react-bootstrap'
 
 const CreateUserForm = () => {
   const [selectedRoles, setSelectedRoles] = useState([])
@@ -81,14 +81,14 @@ const CreateUserForm = () => {
     }
   }
 
-  const handleRoleChange = (roleId) => {
-    const updatedRoles = selectedRoles.includes(roleId)
-      ? selectedRoles.filter((id) => id !== roleId)
-      : [...selectedRoles, roleId]
+  // const handleRoleChange = (roleId) => {
+  //   const updatedRoles = selectedRoles.includes(roleId)
+  //     ? selectedRoles.filter((id) => id !== roleId)
+  //     : [...selectedRoles, roleId]
 
-    formik.setFieldValue('roleIds', updatedRoles)
-    setSelectedRoles(updatedRoles)
-  }
+  //   formik.setFieldValue('roleIds', updatedRoles)
+  //   setSelectedRoles(updatedRoles)
+  // }
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string()

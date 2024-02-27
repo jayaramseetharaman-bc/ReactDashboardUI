@@ -99,7 +99,7 @@ const routes = [
   { path: '/widgets', name: 'Widgets', element: Widgets },
   { path: '/users', name: 'Users', element: Users },
   { path: '/users/adduser', name: 'Add User', element: AddUser },
-  { path: '/users/adduser', name: 'Edit User', element: AddUser },
+  { path: '/users/edituser', name: 'Edit User', element: AddUser },
 ]
 
 export default routes
