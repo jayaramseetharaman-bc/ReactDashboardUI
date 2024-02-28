@@ -325,7 +325,7 @@ function UserDetails() {
                       <div className="ms-3">Status</div>
                       <CFormSelect
                         size="sm"
-                        className="mb-3 mt-2 ms-2"
+                        className="mb-3 mt-2 ms-2 custom-select"
                         aria-label="status"
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
@@ -341,7 +341,7 @@ function UserDetails() {
                     <div className="ms-2">
                       <div className="ms-2">Roles</div>
                       <Select
-                        className="mb-3 mt-2 ms-2 me-3"
+                        className="mb-3 mt-2 ms-2 me-3 custom-select"
                         isMulti
                         options={roles.map((role) => ({ value: role.id, label: role.name }))}
                         value={selectedRoles.map((roleId) => ({
@@ -369,7 +369,7 @@ function UserDetails() {
             Add
           </CButton>
         </CCardHeader>
-        <div>
+        <div style={{ zIndex: 0 }}>
           <MaterialReactTable table={table} />
           <CModal
             alignment="center"
