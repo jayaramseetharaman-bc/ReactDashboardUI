@@ -46,6 +46,7 @@ function UserDetails() {
   const [selectedRoles, setSelectedRoles] = useState([])
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [triggerApiCall, setTriggerApiCall] = useState(false)
 
   const roles = [
     { id: 1, name: 'Team Lead' },
@@ -65,6 +66,8 @@ function UserDetails() {
         pageCount,
         globalFilter,
         sorting,
+        selectedStatus,
+        selectedRoles,
       )
       setUserData(userJson)
       console.log('userJson', userData)
@@ -92,8 +95,6 @@ function UserDetails() {
     navigate('/users/adduser')
   }
   function HandleSearchButtonClick() {
-    debugger
-    console.log('searchtext', searchTerm)
     setGlobalFilter(searchTerm)
     if (selectedSearchOptions && selectedSearchOptions.length > 0) {
       if (selectedSearchOptions.includes(1)) {
@@ -102,6 +103,7 @@ function UserDetails() {
         console.log('rolesfilterselected', selectedRoles)
       }
     }
+    setTriggerApiCall((prevState) => !prevState)
   }
   function HandleClearButtonClick() {
     setSearchTerm('')
@@ -110,11 +112,12 @@ function UserDetails() {
     setSelectedRoles([])
     setSelectedStatus(null)
     selectInputRef.current.clearValue()
+    setTriggerApiCall((prevState) => !prevState)
   }
 
   useEffect(() => {
     GetUserDetails(pagination.pageIndex, pagination.pageSize, globalFilter, sorting)
-  }, [pagination.pageIndex, pagination.pageSize, globalFilter, sorting])
+  }, [pagination.pageIndex, pagination.pageSize, globalFilter, sorting, triggerApiCall])
 
   const columns = useMemo(
     () => [

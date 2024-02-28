@@ -3,10 +3,11 @@ export async function GetUserDetailsWithPagination(
   pageSize,
   searchKeyword = null,
   sorting,
+  selectedStatus = null,
+  selectedRoles = [],
 ) {
   var sortBy = 'userName'
   var sortOrder = 'ASC'
-
   if (sorting && sorting.length > 0) {
     sortBy = sorting[0].id
     var sortOrderBoolean = sorting[0].desc
@@ -20,6 +21,14 @@ export async function GetUserDetailsWithPagination(
   userUrl.searchParams.append('PageSize', pageSize)
   if (searchKeyword !== null) {
     userUrl.searchParams.append('SearchKeyword', searchKeyword)
+  }
+  if (selectedStatus !== null && selectedStatus.trim() !== '') {
+    userUrl.searchParams.append('SearchByStatus', selectedStatus === 'active' ? true : false)
+  }
+  if (selectedRoles.length > 0) {
+    selectedRoles.forEach((roleId) => {
+      userUrl.searchParams.append('SearchByRoles', roleId)
+    })
   }
   userUrl.searchParams.append('SortBy', sortBy)
   userUrl.searchParams.append('SortOrder', sortOrder)
