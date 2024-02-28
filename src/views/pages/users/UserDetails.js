@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import { GetUserDetailsWithPagination, DeleteUserById } from 'src/services/httpService'
@@ -29,6 +29,7 @@ import Select from 'react-select'
 
 function UserDetails() {
   const navigate = useNavigate()
+  const selectInputRef = useRef()
   const [userData, setUserData] = useState({
     userList: [],
     rowCount: 0,
@@ -108,6 +109,7 @@ function UserDetails() {
     setselectedSearchOptions([])
     setSelectedRoles([])
     setSelectedStatus(null)
+    selectInputRef.current.clearValue()
   }
 
   useEffect(() => {
@@ -297,6 +299,7 @@ function UserDetails() {
                     <Select
                       className="custom-select"
                       id="search-by"
+                      ref={selectInputRef}
                       isMulti
                       options={searchByOptions.map((searchby) => ({
                         value: searchby.id,
