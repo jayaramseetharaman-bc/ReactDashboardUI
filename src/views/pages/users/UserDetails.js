@@ -37,13 +37,14 @@ function UserDetails() {
     pageIndex: 0,
     pageSize: 10,
   })
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [globalFilter, setGlobalFilter] = useState(null)
   const [sorting, setSorting] = useState([])
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
   const [selectedSearchOptions, setselectedSearchOptions] = useState([])
   const [selectedRoles, setSelectedRoles] = useState([])
   const [selectedStatus, setSelectedStatus] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const roles = [
     { id: 1, name: 'Team Lead' },
@@ -51,14 +52,13 @@ function UserDetails() {
     { id: 3, name: 'Consultant' },
     { id: 4, name: 'Software Engineer' },
   ]
-  const searchByOptions = [
+  let searchByOptions = [
     { id: 1, name: 'Status' },
     { id: 2, name: 'Roles' },
   ]
 
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
     try {
-      console.log(sorting)
       const userJson = await GetUserDetailsWithPagination(
         currentPage,
         pageCount,
@@ -89,6 +89,25 @@ function UserDetails() {
 
   function HandleAddButtonClick() {
     navigate('/users/adduser')
+  }
+  function HandleSearchButtonClick() {
+    debugger
+    console.log('searchtext', searchTerm)
+    setGlobalFilter(searchTerm)
+    if (selectedSearchOptions && selectedSearchOptions.length > 0) {
+      if (selectedSearchOptions.includes(1)) {
+        console.log('activefilterselected', selectedStatus)
+      } else if (selectedSearchOptions.includes(2)) {
+        console.log('rolesfilterselected', selectedRoles)
+      }
+    }
+  }
+  function HandleClearButtonClick() {
+    setSearchTerm('')
+    setGlobalFilter('')
+    setselectedSearchOptions([])
+    setSelectedRoles([])
+    setSelectedStatus(null)
   }
 
   useEffect(() => {
@@ -248,15 +267,26 @@ function UserDetails() {
                         <FaSearch />
                       </CInputGroupText>
                       <CFormInput
+                        id="searchInput"
                         placeholder="Search"
                         aria-label="Search"
                         aria-describedby="addon-wrapping"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                       />
                       <div className="ms-2">
-                        <CButton className="btn btn-primary " color="primary">
+                        <CButton
+                          className="btn btn-primary"
+                          color="primary"
+                          onClick={() => HandleSearchButtonClick()}
+                        >
                           Search
                         </CButton>
-                        <CButton className="btn btn-primary ms-2" color="primary">
+                        <CButton
+                          className="btn btn-primary ms-2"
+                          color="primary"
+                          onClick={() => HandleClearButtonClick()}
+                        >
                           Clear
                         </CButton>
                       </div>
@@ -266,6 +296,7 @@ function UserDetails() {
                     <div className="me-3">Search By</div>
                     <Select
                       className="custom-select"
+                      id="search-by"
                       isMulti
                       options={searchByOptions.map((searchby) => ({
                         value: searchby.id,
@@ -274,6 +305,10 @@ function UserDetails() {
                       onChange={(selectedOptions) => {
                         const selectedSearchOptions = selectedOptions.map((option) => option.value)
                         setselectedSearchOptions(selectedSearchOptions)
+                        if (selectedOptions.length === 0) {
+                          setSelectedStatus('')
+                          setSelectedRoles([])
+                        }
                       }}
                     />
                   </div>
@@ -289,8 +324,9 @@ function UserDetails() {
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
                       >
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
+                        <option value=""> Select...</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
                       </CFormSelect>
                     </div>
                   )}
