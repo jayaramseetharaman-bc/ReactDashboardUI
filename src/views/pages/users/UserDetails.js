@@ -21,6 +21,7 @@ import {
   CInputGroup,
   CInputGroupText,
   CFormInput,
+  CFormSelect,
 } from '@coreui/react'
 import { cilPlus } from '@coreui/icons'
 import { FaEdit, FaTrashAlt, FaSearch } from 'react-icons/fa'
@@ -41,6 +42,8 @@ function UserDetails() {
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
   const [selectedSearchOptions, setselectedSearchOptions] = useState([])
+  const [selectedRoles, setSelectedRoles] = useState([])
+  const [selectedStatus, setSelectedStatus] = useState(null)
 
   const roles = [
     { id: 1, name: 'Team Lead' },
@@ -262,6 +265,7 @@ function UserDetails() {
                   <div className="ms-md-3 mt-2 d-flex align-items-center">
                     <div className="me-3">Search By</div>
                     <Select
+                      className="custom-select"
                       isMulti
                       options={searchByOptions.map((searchby) => ({
                         value: searchby.id,
@@ -274,6 +278,42 @@ function UserDetails() {
                     />
                   </div>
                 </div>
+                <CInputGroup className="mt-3 d-flex align-items-center">
+                  {selectedSearchOptions.includes(1) && (
+                    <div>
+                      <div className="ms-3">Status</div>
+                      <CFormSelect
+                        size="sm"
+                        className="mb-3 mt-2 ms-2"
+                        aria-label="status"
+                        value={selectedStatus}
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                      >
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                      </CFormSelect>
+                    </div>
+                  )}
+
+                  {selectedSearchOptions.includes(2) && (
+                    <div className="ms-2">
+                      <div className="ms-2">Roles</div>
+                      <Select
+                        className="mb-3 mt-2 ms-2 me-3"
+                        isMulti
+                        options={roles.map((role) => ({ value: role.id, label: role.name }))}
+                        value={selectedRoles.map((roleId) => ({
+                          value: roleId,
+                          label: roles.find((role) => role.id === roleId).name,
+                        }))}
+                        onChange={(selectedOptions) => {
+                          const selectedRoleIds = selectedOptions.map((option) => option.value)
+                          setSelectedRoles(selectedRoleIds)
+                        }}
+                      />
+                    </div>
+                  )}
+                </CInputGroup>
               </CAccordionBody>
             </CAccordionItem>
           </CAccordion>
