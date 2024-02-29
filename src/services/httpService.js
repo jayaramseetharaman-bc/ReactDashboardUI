@@ -1,3 +1,5 @@
+const baseUrl = process.env.REACT_APP_API_URL
+
 export async function GetUserDetailsWithPagination(
   pageIndex,
   pageSize,
@@ -16,7 +18,8 @@ export async function GetUserDetailsWithPagination(
       sortOrder = 'DESC'
     }
   }
-  const userUrl = new URL('https://localhost:7226/users/userList')
+  const url = `${baseUrl}/users/userList`
+  const userUrl = new URL(url)
   userUrl.searchParams.append('PageIndex', pageIndex + 1)
   userUrl.searchParams.append('PageSize', pageSize)
   if (searchKeyword !== null) {
@@ -47,7 +50,7 @@ export async function GetUserDetailsWithPagination(
   return userData
 }
 export async function DeleteUserById(userId) {
-  const deleteUrl = `https://localhost:7226/users?userId=${userId}`
+  const deleteUrl = `${baseUrl}/users?userId=${userId}`
   const response = await fetch(deleteUrl, {
     method: 'DELETE',
     headers: {
@@ -57,4 +60,23 @@ export async function DeleteUserById(userId) {
   if (!response.ok) {
     throw new Error('Failed to delete user', response.statusText)
   }
+}
+
+export async function AddorEditUser(formData, url, httpMethod) {
+  const userResponse = await fetch(`${baseUrl}${url}`, {
+    method: httpMethod,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+  if (!userResponse.ok) {
+    const errorData = {
+      message: 'Failed to Add User',
+      status: userResponse.status,
+    }
+    throw errorData
+  }
+  const userData = await userResponse.json()
+  return userData
 }
