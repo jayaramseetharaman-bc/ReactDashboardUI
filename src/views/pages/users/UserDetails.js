@@ -94,24 +94,29 @@ function UserDetails() {
   function HandleAddButtonClick() {
     navigate('/users/adduser')
   }
+
   function HandleSearchButtonClick() {
     setGlobalFilter(searchTerm)
-    if (selectedSearchOptions && selectedSearchOptions.length > 0) {
-      if (selectedSearchOptions.includes(1)) {
-        console.log('activefilterselected', selectedStatus)
-      } else if (selectedSearchOptions.includes(2)) {
-        console.log('rolesfilterselected', selectedRoles)
-      }
-    }
     setTriggerApiCall((prevState) => !prevState)
   }
+  // function HandleSearchButtonClick() {
+  //   setGlobalFilter(searchTerm)
+  //   if (selectedSearchOptions && selectedSearchOptions.length > 0) {
+  //     if (selectedSearchOptions.includes(1)) {
+  //       console.log('activefilterselected', selectedStatus)
+  //     } else if (selectedSearchOptions.includes(2)) {
+  //       console.log('rolesfilterselected', selectedRoles)
+  //     }
+  //   }
+  //   setTriggerApiCall((prevState) => !prevState)
+  // }
   function HandleClearButtonClick() {
     setSearchTerm('')
     setGlobalFilter('')
-    setselectedSearchOptions([])
+    //setselectedSearchOptions([])
     setSelectedRoles([])
     setSelectedStatus(null)
-    selectInputRef.current.clearValue()
+    // selectInputRef.current.clearValue()
     setTriggerApiCall((prevState) => !prevState)
   }
 
@@ -174,28 +179,14 @@ function UserDetails() {
         header: 'Roles',
         size: 200,
         Cell: ({ renderedCellValue }) => {
-          const [isRolesOpen, setIsRolesOpen] = useState(false)
-          return (
-            <>
-              <CButton
-                className="btn-lg"
-                color="link"
-                style={{ fontSize: '13px', marginLeft: '-15px' }}
-                onClick={() => setIsRolesOpen(!isRolesOpen)}
-              >
-                {isRolesOpen ? 'Hide Roles' : 'Show Roles'}
-              </CButton>
+          const rolesList = renderedCellValue
+            .map((roleId) => {
+              const role = roles.find((role) => role.id === roleId)
+              return role ? role.name : ''
+            })
+            .filter((role) => role !== '')
 
-              {isRolesOpen && (
-                <div>
-                  {renderedCellValue.map((roleId) => {
-                    const role = roles.find((role) => role.id === roleId)
-                    return <div key={roleId}>{role.name}</div>
-                  })}
-                </div>
-              )}
-            </>
-          )
+          return <span>{rolesList.join(', ')}</span>
         },
         enableSorting: false,
         enableColumnActions: false,
@@ -265,97 +256,81 @@ function UserDetails() {
             <CAccordionItem itemKey={1}>
               <CAccordionHeader>Search</CAccordionHeader>
               <CAccordionBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
+                <div className="mb-3 me-5"></div>
+                <div className="d-flex flex-wrap align-items-center">
+                  <div className="mb-3 me-4"></div>
+                  <div className="mb-3 me-4 custom-select">
                     <CInputGroup>
                       <CInputGroupText id="addon-wrapping">
                         <FaSearch />
                       </CInputGroupText>
                       <CFormInput
+                        className=""
                         id="searchInput"
-                        placeholder="Search"
+                        placeholder="Search by Username and Email"
                         aria-label="Search"
                         aria-describedby="addon-wrapping"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
-                      <div className="ms-2">
-                        <CButton
-                          className="btn btn-primary"
-                          color="primary"
-                          onClick={() => HandleSearchButtonClick()}
-                        >
-                          Search
-                        </CButton>
-                        <CButton
-                          className="btn btn-primary ms-2"
-                          color="primary"
-                          onClick={() => HandleClearButtonClick()}
-                        >
-                          Clear
-                        </CButton>
-                      </div>
                     </CInputGroup>
                   </div>
-                  <div className="ms-md-3 mt-2 d-flex align-items-center">
-                    <div className="me-3">Search By</div>
+                  <div className="mb-3 me-4">
                     <Select
-                      className="custom-select"
-                      id="search-by"
-                      ref={selectInputRef}
+                      className="custom-search-select"
+                      placeholder="Search by Role"
                       isMulti
-                      options={searchByOptions.map((searchby) => ({
-                        value: searchby.id,
-                        label: searchby.name,
+                      options={roles.map((role) => ({
+                        value: role.id,
+                        label: role.name,
+                      }))}
+                      value={selectedRoles.map((roleId) => ({
+                        value: roleId,
+                        label: roles.find((role) => role.id === roleId).name,
                       }))}
                       onChange={(selectedOptions) => {
-                        const selectedSearchOptions = selectedOptions.map((option) => option.value)
-                        setselectedSearchOptions(selectedSearchOptions)
-                        if (selectedOptions.length === 0) {
-                          setSelectedStatus('')
-                          setSelectedRoles([])
-                        }
+                        const selectedRoleIds = selectedOptions.map((option) => option.value)
+                        setSelectedRoles(selectedRoleIds)
                       }}
                     />
                   </div>
+                  <div className="mb-3 me-4">
+                    <Select
+                      className="custom-search-select"
+                      placeholder="Search by Status"
+                      isSearchable
+                      isClearable
+                      options={[
+                        { value: '', label: 'Select...' },
+                        { value: 'active', label: 'Active' },
+                        { value: 'inactive', label: 'Inactive' },
+                      ]}
+                      value={
+                        selectedStatus
+                          ? {
+                              value: selectedStatus,
+                              label: selectedStatus === 'active' ? 'Active' : 'Inactive',
+                            }
+                          : null
+                      }
+                      onChange={(selectedOption) =>
+                        setSelectedStatus(selectedOption ? selectedOption.value : null)
+                      }
+                    />
+                  </div>
+                  <div className="ms-auto">
+                    <CButton
+                      color="primary"
+                      className="me-3"
+                      onClick={() => HandleSearchButtonClick()}
+                    >
+                      Search
+                    </CButton>
+                    <CButton color="primary" onClick={() => HandleClearButtonClick()}>
+                      Clear
+                    </CButton>
+                  </div>
                 </div>
-                <CInputGroup className="mt-3 d-flex align-items-center">
-                  {selectedSearchOptions.includes(1) && (
-                    <div>
-                      <div className="ms-3">Status</div>
-                      <CFormSelect
-                        size="sm"
-                        className="mb-3 mt-2 ms-2 custom-select"
-                        aria-label="status"
-                        value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                      >
-                        <option value=""> Select...</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                      </CFormSelect>
-                    </div>
-                  )}
-
-                  {selectedSearchOptions.includes(2) && (
-                    <div className="ms-2">
-                      <div className="ms-2">Roles</div>
-                      <Select
-                        className="mb-3 mt-2 ms-2 me-3 custom-select"
-                        isMulti
-                        options={roles.map((role) => ({ value: role.id, label: role.name }))}
-                        value={selectedRoles.map((roleId) => ({
-                          value: roleId,
-                          label: roles.find((role) => role.id === roleId).name,
-                        }))}
-                        onChange={(selectedOptions) => {
-                          const selectedRoleIds = selectedOptions.map((option) => option.value)
-                          setSelectedRoles(selectedRoleIds)
-                        }}
-                      />
-                    </div>
-                  )}
-                </CInputGroup>
               </CAccordionBody>
             </CAccordionItem>
           </CAccordion>
@@ -364,10 +339,16 @@ function UserDetails() {
       <CCard className="mb-4">
         <CCardHeader className="d-flex justify-content-between align-items-center">
           <div>Users</div>
-          <CButton color="primary" className="me-md-3 mt-2" onClick={() => HandleAddButtonClick()}>
-            <CIcon icon={cilPlus} className="me-2" />
-            Add
-          </CButton>
+          <div>
+            <CButton
+              color="primary"
+              className="me-md-3 mt-2"
+              onClick={() => HandleAddButtonClick()}
+            >
+              <CIcon icon={cilPlus} className="me-2" />
+              Add
+            </CButton>
+          </div>
         </CCardHeader>
         <div style={{ zIndex: 0 }}>
           <MaterialReactTable table={table} />
