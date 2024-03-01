@@ -141,14 +141,14 @@ function UserDetails() {
       {
         accessorKey: 'contactNumber',
         header: 'User Contact',
-        size: 150,
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
       },
       {
         accessorKey: 'isActive',
         header: 'IsActive',
-        size: 150,
+        size: 100,
         // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => {
           return (
@@ -177,7 +177,7 @@ function UserDetails() {
       {
         accessorKey: 'roleIds',
         header: 'Roles',
-        size: 200,
+        size: 150,
         Cell: ({ renderedCellValue }) => {
           const rolesList = renderedCellValue
             .map((roleId) => {
@@ -194,6 +194,7 @@ function UserDetails() {
       {
         accessorKey: 'userId',
         header: 'Actions',
+        size: 100,
         enableSorting: false,
         enableColumnActions: false,
         // eslint-disable-next-line react/prop-types
@@ -223,6 +224,13 @@ function UserDetails() {
   const table = useMaterialReactTable({
     columns,
     data: userData.userList,
+    muiTableBodyCellProps: {
+      sx: {
+        borderRight: '2px  #e0e0e0',
+        maxWidth: '200px',
+        wordWrap: 'break-word',
+      },
+    },
     // initialState: { showGlobalFilter: true },
     enableGlobalFilter: false,
     enableColumnFilters: false,
@@ -252,13 +260,12 @@ function UserDetails() {
     <>
       <CCard className="mb-2">
         <CCardHeader>
-          <CAccordion flush activeItemKey={2}>
+          <CAccordion flush>
             <CAccordionItem itemKey={1}>
               <CAccordionHeader>Search</CAccordionHeader>
               <CAccordionBody>
                 <div className="mb-3 me-5"></div>
                 <div className="d-flex flex-wrap align-items-center">
-                  <div className="mb-3 me-4"></div>
                   <div className="mb-3 me-4 custom-select">
                     <CInputGroup>
                       <CInputGroupText id="addon-wrapping">
@@ -301,7 +308,7 @@ function UserDetails() {
                       isSearchable
                       isClearable
                       options={[
-                        { value: '', label: 'Select...' },
+                        // { value: '', label: 'Select...' },
                         { value: 'active', label: 'Active' },
                         { value: 'inactive', label: 'Inactive' },
                       ]}
