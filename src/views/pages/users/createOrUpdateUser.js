@@ -24,7 +24,7 @@ import {
   CAlert,
 } from '@coreui/react'
 import Select from 'react-select'
-import { AddorEditUser } from 'src/services/httpService'
+import { AddorEditUser, GetUserById } from 'src/services/httpService'
 // import { CardBody } from 'react-bootstrap'
 
 const CreateUserForm = () => {
@@ -58,25 +58,19 @@ const CreateUserForm = () => {
   }
   const fetchUserData = async (userId) => {
     try {
-      const apiUrl = process.env.REACT_APP_API_URL
-      const response = await fetch(`${apiUrl}/users?user-id=${userId}`)
-      if (response.ok) {
-        const userData = await response.json()
-        formik.setValues({
-          firstName: userData.userData.firstName,
-          lastName: userData.userData.lastName,
-          mobileNumber: userData.userData.contactNumber,
-          email: userData.userData.email,
-          address: userData.userData.address,
-          userTypeId: userData.userData.userType,
-          roleIds: userData.roleIds,
-          isActive: userData.userData.isActive,
-          termsAndConditions: false,
-        })
-        setSelectedRoles(userData.roleIds)
-      } else {
-        throw new Error('Failed to fetch user data')
-      }
+      const userData = await GetUserById(userId)
+      formik.setValues({
+        firstName: userData.userData.firstName,
+        lastName: userData.userData.lastName,
+        mobileNumber: userData.userData.contactNumber,
+        email: userData.userData.email,
+        address: userData.userData.address,
+        userTypeId: userData.userData.userType,
+        roleIds: userData.roleIds,
+        isActive: userData.userData.isActive,
+        termsAndConditions: false,
+      })
+      setSelectedRoles(userData.roleIds)
     } catch (error) {
       console.error('Error fetching user data:', error.message)
       Swal.fire({

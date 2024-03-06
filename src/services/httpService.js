@@ -1,4 +1,7 @@
 const baseUrl = process.env.REACT_APP_API_URL
+function getAuthToken() {
+  return localStorage.getItem('accessToken')
+}
 
 export async function GetUserDetailsWithPagination(
   pageIndex,
@@ -8,6 +11,7 @@ export async function GetUserDetailsWithPagination(
   selectedStatus = null,
   selectedRoles = [],
 ) {
+  const accessToken = getAuthToken()
   var sortBy = 'userName'
   var sortOrder = 'ASC'
   if (sorting && sorting.length > 0) {
@@ -40,6 +44,7 @@ export async function GetUserDetailsWithPagination(
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
   })
   if (!userResponse.ok) {
@@ -50,11 +55,13 @@ export async function GetUserDetailsWithPagination(
   return userData
 }
 export async function DeleteUserById(userId) {
+  const accessToken = getAuthToken()
   const deleteUrl = `${baseUrl}/users?userId=${userId}`
   const response = await fetch(deleteUrl, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
   })
   if (!response.ok) {
@@ -63,10 +70,12 @@ export async function DeleteUserById(userId) {
 }
 
 export async function AddorEditUser(formData, url, httpMethod) {
+  const accessToken = getAuthToken()
   const userResponse = await fetch(`${baseUrl}${url}`, {
     method: httpMethod,
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(formData),
   })
@@ -78,5 +87,22 @@ export async function AddorEditUser(formData, url, httpMethod) {
     throw errorData
   }
   const userData = await userResponse.json()
+  return userData
+}
+
+export async function GetUserById(userId) {
+  const accessToken = getAuthToken()
+  const userUrl = `${baseUrl}/users?user-id=${userId}`
+  const response = await fetch(userUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data', response.statusText)
+  }
+  const userData = await response.json()
   return userData
 }

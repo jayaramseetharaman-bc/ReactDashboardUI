@@ -22,6 +22,7 @@ const AppHeaderDropdown = () => {
           account: accounts[0],
         })
         console.log('res', response)
+        localStorage.setItem('accessToken', response.accessToken)
       } catch (error) {
         console.error('Error fetching profile photo:', error)
       }
@@ -39,6 +40,7 @@ const AppHeaderDropdown = () => {
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('accessToken')
     instance.logoutRedirect({
       postLogoutRedirectUri: '/#/logout',
     })
