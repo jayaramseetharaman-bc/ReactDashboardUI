@@ -30,11 +30,11 @@ export async function GetUserDetailsWithPagination(
     userUrl.searchParams.append('SearchKeyword', searchKeyword)
   }
   if (selectedStatus !== null && selectedStatus.trim() !== '') {
-    userUrl.searchParams.append('SearchByStatus', selectedStatus === 'active' ? true : false)
+    userUrl.searchParams.append('Status', selectedStatus === 'active' ? true : false)
   }
   if (selectedRoles.length > 0) {
     selectedRoles.forEach((roleId) => {
-      userUrl.searchParams.append('SearchByRoles', roleId)
+      userUrl.searchParams.append('Roles', roleId)
     })
   }
   userUrl.searchParams.append('SortBy', sortBy)
