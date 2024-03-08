@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
-import { GetUserDetailsWithPagination, DeleteUserById } from 'src/services/httpService'
+import { GetUserDetailsWithPagination, DeleteUserById, GetRoles } from 'src/services/httpService'
 import { Link, useNavigate } from 'react-router-dom'
 import CIcon from '@coreui/icons-react'
 import {
   CCard,
-  CCardBody,
   CCardHeader,
   CButton,
   CModal,
@@ -21,7 +20,6 @@ import {
   CInputGroup,
   CInputGroupText,
   CFormInput,
-  CFormSelect,
 } from '@coreui/react'
 import { cilPlus } from '@coreui/icons'
 import { FaEdit, FaTrashAlt, FaSearch } from 'react-icons/fa'
@@ -29,7 +27,6 @@ import Select from 'react-select'
 
 function UserDetails() {
   const navigate = useNavigate()
-  const selectInputRef = useRef()
   const [userData, setUserData] = useState({
     userList: [],
     rowCount: 0,
@@ -42,23 +39,24 @@ function UserDetails() {
   const [sorting, setSorting] = useState([])
   const [visible, setVisible] = useState(false)
   const [userIdToDelete, setUserIdToDelete] = useState(null)
-  const [selectedSearchOptions, setselectedSearchOptions] = useState([])
   const [selectedRoles, setSelectedRoles] = useState([])
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [triggerApiCall, setTriggerApiCall] = useState(false)
+  const [roles, setRoles] = useState([])
 
-  const roles = [
-    { id: 1, name: 'Team Lead' },
-    { id: 2, name: 'Manager' },
-    { id: 3, name: 'Consultant' },
-    { id: 4, name: 'Software Engineer' },
-  ]
-  let searchByOptions = [
-    { id: 1, name: 'Status' },
-    { id: 2, name: 'Roles' },
-  ]
-
+  const fetchRoles = async () => {
+    try {
+      const roles = await GetRoles()
+      console.log('Roles:', roles)
+      setRoles(roles)
+    } catch (error) {
+      console.error('Error fetching roles:', error)
+    }
+  }
+  useEffect(() => {
+    fetchRoles()
+  }, [])
   async function GetUserDetails(currentPage, pageCount, globalFilter, sorting) {
     try {
       const userJson = await GetUserDetailsWithPagination(
@@ -69,6 +67,7 @@ function UserDetails() {
         selectedStatus,
         selectedRoles,
       )
+
       setUserData(userJson)
       console.log('userJson', userData)
       console.log('statevalues', userData)
@@ -92,31 +91,19 @@ function UserDetails() {
   }
 
   function HandleAddButtonClick() {
-    navigate('/users/adduser')
+    navigate('/users/add')
   }
 
   function HandleSearchButtonClick() {
     setGlobalFilter(searchTerm)
     setTriggerApiCall((prevState) => !prevState)
   }
-  // function HandleSearchButtonClick() {
-  //   setGlobalFilter(searchTerm)
-  //   if (selectedSearchOptions && selectedSearchOptions.length > 0) {
-  //     if (selectedSearchOptions.includes(1)) {
-  //       console.log('activefilterselected', selectedStatus)
-  //     } else if (selectedSearchOptions.includes(2)) {
-  //       console.log('rolesfilterselected', selectedRoles)
-  //     }
-  //   }
-  //   setTriggerApiCall((prevState) => !prevState)
-  // }
+
   function HandleClearButtonClick() {
     setSearchTerm('')
     setGlobalFilter('')
-    //setselectedSearchOptions([])
     setSelectedRoles([])
     setSelectedStatus(null)
-    // selectInputRef.current.clearValue()
     setTriggerApiCall((prevState) => !prevState)
   }
 
@@ -124,8 +111,12 @@ function UserDetails() {
     GetUserDetails(pagination.pageIndex, pagination.pageSize, globalFilter, sorting)
   }, [pagination.pageIndex, pagination.pageSize, globalFilter, sorting, triggerApiCall])
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    if (roles.length === 0) {
+      return []
+    }
+
+    return [
       {
         accessorKey: 'userName',
         header: 'User Name',
@@ -149,7 +140,6 @@ function UserDetails() {
         accessorKey: 'isActive',
         header: 'IsActive',
         size: 100,
-        // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => {
           return (
             <span>
@@ -181,8 +171,8 @@ function UserDetails() {
         Cell: ({ renderedCellValue }) => {
           const rolesList = renderedCellValue
             .map((roleId) => {
-              const role = roles.find((role) => role.id === roleId)
-              return role ? role.name : ''
+              const role = roles.find((role) => role.roleId === roleId)
+              return role ? role.roleName : ''
             })
             .filter((role) => role !== '')
 
@@ -192,16 +182,15 @@ function UserDetails() {
         enableColumnActions: false,
       },
       {
-        accessorKey: 'userId',
+        accessorKey: 'email',
         header: 'Actions',
         size: 100,
         enableSorting: false,
         enableColumnActions: false,
-        // eslint-disable-next-line react/prop-types
         Cell: ({ renderedCellValue }) => (
           <div>
             <Link
-              to={`edituser?user-id=${renderedCellValue}`}
+              to={`edit?user-id=${renderedCellValue}`}
               style={{ fontSize: '1rem' }}
               className="me-1"
             >
@@ -217,9 +206,8 @@ function UserDetails() {
           </div>
         ),
       },
-    ],
-    [],
-  )
+    ]
+  }, [roles])
 
   const table = useMaterialReactTable({
     columns,
@@ -231,7 +219,6 @@ function UserDetails() {
         wordWrap: 'break-word',
       },
     },
-    // initialState: { showGlobalFilter: true },
     enableGlobalFilter: false,
     enableColumnFilters: false,
     enableGlobalFilterModes: false,
@@ -288,12 +275,12 @@ function UserDetails() {
                       placeholder="Search by Role"
                       isMulti
                       options={roles.map((role) => ({
-                        value: role.id,
-                        label: role.name,
+                        value: role.roleId,
+                        label: role.roleName,
                       }))}
                       value={selectedRoles.map((roleId) => ({
                         value: roleId,
-                        label: roles.find((role) => role.id === roleId).name,
+                        label: roles.find((role) => role.roleId === roleId).roleName,
                       }))}
                       onChange={(selectedOptions) => {
                         const selectedRoleIds = selectedOptions.map((option) => option.value)
@@ -308,7 +295,6 @@ function UserDetails() {
                       isSearchable
                       isClearable
                       options={[
-                        // { value: '', label: 'Select...' },
                         { value: 'active', label: 'Active' },
                         { value: 'inactive', label: 'Inactive' },
                       ]}

@@ -1,7 +1,5 @@
 import React from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
-import { UnauthenticatedTemplate } from '@azure/msal-react'
-import SignInButton from 'src/components/SignInButton'
 
 const DefaultLayout = () => {
   return (
@@ -14,13 +12,6 @@ const DefaultLayout = () => {
         </div>
         <AppFooter />
       </div>
-      <UnauthenticatedTemplate>
-        <h5>
-          <center>
-            <SignInButton>Please sign-in to see your profile information.</SignInButton>
-          </center>
-        </h5>
-      </UnauthenticatedTemplate>
     </div>
   )
 }

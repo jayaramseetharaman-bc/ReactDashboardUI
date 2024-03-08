@@ -1,20 +1,9 @@
 import React from 'react'
-import { loginRequest } from 'src/authConfig'
-import { useMsal } from '@azure/msal-react'
-import {
-  CButton,
-  CCard,
-  CCardBody,
-  CCardFooter,
-  CCardHeader,
-  CCardText,
-  CCardTitle,
-} from '@coreui/react'
+import { CButton, CCard, CCardBody, CCardHeader, CCardTitle } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 
 const SignInPage = () => {
   const navigate = useNavigate()
-  const { instance } = useMsal()
   const handleSignIn = () => {
     navigate('/')
   }

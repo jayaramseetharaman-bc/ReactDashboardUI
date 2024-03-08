@@ -24,8 +24,7 @@ import {
   CAlert,
 } from '@coreui/react'
 import Select from 'react-select'
-import { AddorEditUser, GetUserById } from 'src/services/httpService'
-// import { CardBody } from 'react-bootstrap'
+import { AddorEditUser, GetUserById, GetRoles } from 'src/services/httpService'
 
 const CreateUserForm = () => {
   const [selectedRoles, setSelectedRoles] = useState([])
@@ -35,20 +34,27 @@ const CreateUserForm = () => {
   const [visible, setVisible] = useState(false)
   const [isFormSubmit, setIsFormSubmit] = useState(null)
   const [errorMessage, setErrorMessage] = useState()
+  const [roles, setRoles] = useState([])
 
-  const roles = [
-    { id: 1, name: 'Team Lead' },
-    { id: 2, name: 'Manager' },
-    { id: 3, name: 'Consultant' },
-    { id: 4, name: 'Software Engineer' },
-  ]
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const roles = await GetRoles()
+        console.log('Roles:', roles)
+        setRoles(roles)
+      } catch (error) {
+        console.error('Error fetching roles:', error)
+      }
+    }
+    fetchRoles()
+  }, [])
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.hash.split('?')[1])
     const userIdParam = urlParams.get('user-id')
     if (userIdParam) {
       setIsEditMode(true)
-      setUserId(parseInt(userIdParam))
+      setUserId(userIdParam)
       fetchUserData(userIdParam)
     }
   }, [])
@@ -60,14 +66,14 @@ const CreateUserForm = () => {
     try {
       const userData = await GetUserById(userId)
       formik.setValues({
-        firstName: userData.userData.firstName,
-        lastName: userData.userData.lastName,
-        mobileNumber: userData.userData.contactNumber,
-        email: userData.userData.email,
-        address: userData.userData.address,
-        userTypeId: userData.userData.userType,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        mobileNumber: userData.contactNumber,
+        email: userData.email,
+        address: userData.address,
+        userTypeId: userData.userType,
         roleIds: userData.roleIds,
-        isActive: userData.userData.isActive,
+        isActive: userData.isActive,
         termsAndConditions: false,
       })
       setSelectedRoles(userData.roleIds)
@@ -80,15 +86,6 @@ const CreateUserForm = () => {
       })
     }
   }
-
-  // const handleRoleChange = (roleId) => {
-  //   const updatedRoles = selectedRoles.includes(roleId)
-  //     ? selectedRoles.filter((id) => id !== roleId)
-  //     : [...selectedRoles, roleId]
-
-  //   formik.setFieldValue('roleIds', updatedRoles)
-  //   setSelectedRoles(updatedRoles)
-  // }
 
   const validationSchema = Yup.object().shape({
     firstName: Yup.string()
@@ -197,7 +194,6 @@ const CreateUserForm = () => {
             <CCol xs={12}>
               <CForm className="row g-3" onSubmit={formik.handleSubmit}>
                 {isFormSubmit && errorMessage && <CAlert color="danger">{errorMessage}</CAlert>}
-                {/* <CCol md={6} style={{ backgroundColor: '#f4f4f4' }}> */}
                 <CCol md={6}>
                   <CFormInput
                     type="text"
@@ -278,10 +274,10 @@ const CreateUserForm = () => {
                   <CFormLabel htmlFor="roleIds">Role(s)</CFormLabel>
                   <Select
                     isMulti
-                    options={roles.map((role) => ({ value: role.id, label: role.name }))}
+                    options={roles.map((role) => ({ value: role.roleId, label: role.roleName }))}
                     value={selectedRoles.map((roleId) => ({
                       value: roleId,
-                      label: roles.find((role) => role.id === roleId).name,
+                      label: roles.find((role) => role.roleId === roleId).roleName,
                     }))}
                     onChange={(selectedOptions) => {
                       const selectedRoleIds = selectedOptions.map((option) => option.value)

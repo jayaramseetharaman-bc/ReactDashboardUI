@@ -3,8 +3,8 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
-const Users = React.lazy(() => import('./views/pages/users/UserDetails'))
-const AddUser = React.lazy(() => import('./views/pages/users/createOrUpdateUser'))
+const Users = React.lazy(() => import('./views/pages/users/list'))
+const AddUser = React.lazy(() => import('./views/pages/users/details'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -98,8 +98,8 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   { path: '/users', name: 'Users', element: Users },
-  { path: '/users/adduser', name: 'Add User', element: AddUser },
-  { path: '/users/edituser', name: 'Edit User', element: AddUser },
+  { path: '/users/add', name: 'Add', element: AddUser },
+  { path: '/users/edit', name: 'Edit', element: AddUser },
 ]
 
 export default routes

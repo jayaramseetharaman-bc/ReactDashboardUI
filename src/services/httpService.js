@@ -22,7 +22,7 @@ export async function GetUserDetailsWithPagination(
       sortOrder = 'DESC'
     }
   }
-  const url = `${baseUrl}/users/userList`
+  const url = `${baseUrl}/users/data`
   const userUrl = new URL(url)
   userUrl.searchParams.append('PageIndex', pageIndex + 1)
   userUrl.searchParams.append('PageSize', pageSize)
@@ -56,7 +56,7 @@ export async function GetUserDetailsWithPagination(
 }
 export async function DeleteUserById(userId) {
   const accessToken = getAuthToken()
-  const deleteUrl = `${baseUrl}/users?userId=${userId}`
+  const deleteUrl = `${baseUrl}/users?user-id=${userId}`
   const response = await fetch(deleteUrl, {
     method: 'DELETE',
     headers: {
@@ -105,4 +105,21 @@ export async function GetUserById(userId) {
   }
   const userData = await response.json()
   return userData
+}
+export async function GetRoles() {
+  debugger
+  const accessToken = getAuthToken()
+  const userUrl = `${baseUrl}/users/roles`
+  const response = await fetch(userUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data', response.statusText)
+  }
+  const roles = await response.json()
+  return roles
 }
