@@ -1,7 +1,5 @@
+import httpClient from 'src/interceptors/http-request-interceptor'
 const baseUrl = process.env.REACT_APP_API_URL
-function getAuthToken() {
-  return localStorage.getItem('accessToken')
-}
 
 export async function GetUserDetailsWithPagination(
   pageIndex,
@@ -11,7 +9,6 @@ export async function GetUserDetailsWithPagination(
   selectedStatus = null,
   selectedRoles = [],
 ) {
-  const accessToken = getAuthToken()
   var sortBy = 'userName'
   var sortOrder = 'ASC'
   if (sorting && sorting.length > 0) {
@@ -40,86 +37,55 @@ export async function GetUserDetailsWithPagination(
   userUrl.searchParams.append('SortBy', sortBy)
   userUrl.searchParams.append('SortOrder', sortOrder)
   // const apiKey = 'otb5xg2keprbf0qjn0btnngokdz26nc1'
-  const userResponse = await fetch(userUrl.toString(), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-  if (!userResponse.ok) {
-    throw new Error('Failed to fetch employee details', userResponse.statusText)
+  try {
+    const userResponse = await httpClient.get(userUrl)
+    return userResponse.data
+  } catch (error) {
+    throw new Error('Failed to fetch employee details', error.response.status)
   }
-  const userData = await userResponse.json()
-
-  return userData
 }
 export async function DeleteUserById(userId) {
-  const accessToken = getAuthToken()
   const deleteUrl = `${baseUrl}/users?user-id=${userId}`
-  const response = await fetch(deleteUrl, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-  if (!response.ok) {
-    throw new Error('Failed to delete user', response.statusText)
+  try {
+    await httpClient.delete(deleteUrl)
+  } catch (error) {
+    throw new Error('Failed to delete user', error.response.status)
   }
 }
 
 export async function AddorEditUser(formData, url, httpMethod) {
-  const accessToken = getAuthToken()
-  const userResponse = await fetch(`${baseUrl}${url}`, {
-    method: httpMethod,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(formData),
-  })
-  if (!userResponse.ok) {
+  const userUrl = `${baseUrl}${url}`
+  try {
+    const userRequest = JSON.stringify(formData)
+    if (httpMethod === 'POST') {
+      await httpClient.post(userUrl, userRequest)
+    } else {
+      await httpClient.put(userUrl, userRequest)
+    }
+  } catch (error) {
     const errorData = {
-      message: 'Failed to Add User',
-      status: userResponse.status,
+      message: 'Failed to Add or Edit User',
+      status: error.response.status,
     }
     throw errorData
   }
-  const userData = await userResponse.json()
-  return userData
 }
 
 export async function GetUserById(userId) {
-  const accessToken = getAuthToken()
   const userUrl = `${baseUrl}/users?user-id=${userId}`
-  const response = await fetch(userUrl, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-  if (!response.ok) {
-    throw new Error('Failed to fetch user data', response.statusText)
+  try {
+    const userResponse = await httpClient.get(userUrl)
+    return userResponse.data
+  } catch (error) {
+    throw new Error('Failed to fetch user data', error.response.status)
   }
-  const userData = await response.json()
-  return userData
 }
 export async function GetRoles() {
-  debugger
-  const accessToken = getAuthToken()
-  const userUrl = `${baseUrl}/users/roles`
-  const response = await fetch(userUrl, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
-  if (!response.ok) {
-    throw new Error('Failed to fetch user data', response.statusText)
+  const rolesUrl = `${baseUrl}/users/roles`
+  try {
+    const roles = await httpClient.get(rolesUrl)
+    return roles.data
+  } catch (error) {
+    throw new Error('Failed to fetch user roles', error.response.status)
   }
-  const roles = await response.json()
-  return roles
 }
