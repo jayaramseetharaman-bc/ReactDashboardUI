@@ -81,7 +81,7 @@ export async function GetUserById(userId) {
   }
 }
 export async function GetRoles() {
-  const rolesUrl = `${baseUrl}/users/roles`
+  const rolesUrl = `${baseUrl}/users/config/roles`
   try {
     const roles = await httpClient.get(rolesUrl)
     return roles.data

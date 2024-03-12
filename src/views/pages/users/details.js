@@ -383,7 +383,7 @@ const CreateUserForm = () => {
                     Save
                   </CButton>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <CButton onClick={handleCancel} oncolor="primary" type="button">
+                  <CButton onClick={handleCancel} color="primary" type="button">
                     Cancel
                   </CButton>
                 </CCol>

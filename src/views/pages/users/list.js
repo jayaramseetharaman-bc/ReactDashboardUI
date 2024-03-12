@@ -182,15 +182,17 @@ function UserDetails() {
         enableColumnActions: false,
       },
       {
-        accessorKey: 'email',
+        accessorKey: 'id',
         header: 'Actions',
         size: 100,
         enableSorting: false,
         enableColumnActions: false,
-        Cell: ({ renderedCellValue }) => (
+        // eslint-disable-next-line react/prop-types
+        Cell: ({ row }) => (
           <div>
             <Link
-              to={`edit?user-id=${renderedCellValue}`}
+              // eslint-disable-next-line react/prop-types
+              to={`edit?user-id=${row.original.email}`}
               style={{ fontSize: '1rem' }}
               className="me-1"
             >
@@ -199,7 +201,8 @@ function UserDetails() {
             <CButton
               className="mb-1"
               color="link"
-              onClick={() => HandleDeleteButtonClick(renderedCellValue)}
+              // eslint-disable-next-line react/prop-types
+              onClick={() => HandleDeleteButtonClick(row.original.email)}
             >
               <FaTrashAlt />
             </CButton>
