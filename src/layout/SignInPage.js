@@ -9,18 +9,20 @@ const SignInPage = () => {
   }
   return (
     <>
-      <CCard className="text-center mt-5">
-        <CCardHeader>Logout</CCardHeader>
-        <CCardBody>
-          <CCardTitle>
-            You have been successfully logged out.Please click the below link to sign in again.
-          </CCardTitle>
-          <CButton className="btn-lg" color="link" onClick={handleSignIn}>
-            {' '}
-            Back to login
-          </CButton>{' '}
-        </CCardBody>
-      </CCard>
+      <div className="mt-5 grid h-screen px-4 bg-white place-content-center">
+        <CCard className="text-center mt-5">
+          <CCardHeader>Logout</CCardHeader>
+          <CCardBody>
+            <CCardTitle>
+              You have been successfully logged out.Please click the below link to sign in again.
+            </CCardTitle>
+            <CButton className="btn-lg" color="link" onClick={handleSignIn}>
+              {' '}
+              Back to login
+            </CButton>{' '}
+          </CCardBody>
+        </CCard>
+      </div>
     </>
   )
 }

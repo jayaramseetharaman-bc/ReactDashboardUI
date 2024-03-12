@@ -3,6 +3,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import './scss/style.scss'
 import MainContent from './MainContent'
 import SignInPage from './layout/SignInPage'
+import ErrorPage from './layout/ErrorPage'
 
 const loading = (
   <div className="pt-3 text-center">
@@ -32,6 +33,7 @@ class App extends Component {
             <Route path="*" name="Home" element={<DefaultLayout />} />
             <Route exact path="/logout" name="Logout" element={<SignInPage />} />
             <Route path="/" element={<MainContent />} />
+            <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </Suspense>
       </HashRouter>
