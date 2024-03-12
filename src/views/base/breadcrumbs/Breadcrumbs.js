@@ -37,24 +37,18 @@ const Breadcrumbs = () => {
             </p>
             <DocsExample href="components/breadcrumb">
               <CBreadcrumb>
-                <CBreadcrumbItem>
-                  <CLink href="#">Home</CLink>
-                </CBreadcrumbItem>
+                <CBreadcrumbItem>{/* <CLink href="#">Home</CLink> */}</CBreadcrumbItem>
                 <CBreadcrumbItem active>Library</CBreadcrumbItem>
               </CBreadcrumb>
               <CBreadcrumb>
-                <CBreadcrumbItem>
-                  <CLink href="#">Home</CLink>
-                </CBreadcrumbItem>
+                <CBreadcrumbItem>{/* <CLink href="#">Home</CLink> */}</CBreadcrumbItem>
                 <CBreadcrumbItem>
                   <CLink href="#">Library</CLink>
                 </CBreadcrumbItem>
                 <CBreadcrumbItem active>Data</CBreadcrumbItem>
               </CBreadcrumb>
               <CBreadcrumb>
-                <CBreadcrumbItem>
-                  <CLink href="#">Home</CLink>
-                </CBreadcrumbItem>
+                <CBreadcrumbItem>{/* <CLink href="#">Home</CLink> */}</CBreadcrumbItem>
                 <CBreadcrumbItem>
                   <CLink href="#">Library</CLink>
                 </CBreadcrumbItem>

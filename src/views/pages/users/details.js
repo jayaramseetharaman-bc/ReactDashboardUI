@@ -174,7 +174,7 @@ const CreateUserForm = () => {
         })
       } catch (err) {
         if (err.status === 409) {
-          setErrorMessage('Email Already Exists.Please try With a Different Email')
+          setErrorMessage('Email Already Exists.Please try with a different Email')
           formik.errors.email = 'Email Already Exists'
         } else {
           setErrorMessage('Unexpected Error Occured.Please try again after sometime')
