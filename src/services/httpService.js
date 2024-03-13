@@ -89,3 +89,13 @@ export async function GetRoles() {
     throw new Error('Failed to fetch user roles', error.response.status)
   }
 }
+export async function GetUserExists(userId) {
+  debugger
+  const userExists = `${baseUrl}/users/is-exist?user-id=${userId}`
+  try {
+    const isUserExists = await httpClient.get(userExists)
+    return isUserExists
+  } catch (error) {
+    throw new Error('Failed to fetch user status', error.response.status)
+  }
+}

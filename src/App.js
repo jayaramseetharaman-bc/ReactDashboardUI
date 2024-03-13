@@ -33,7 +33,7 @@ class App extends Component {
             <Route path="*" name="Home" element={<DefaultLayout />} />
             <Route exact path="/logout" name="Logout" element={<SignInPage />} />
             <Route path="/" element={<MainContent />} />
-            <Route path="/error" element={<ErrorPage />} />
+            <Route path="/error" name="401" element={<ErrorPage />} />
           </Routes>
         </Suspense>
       </HashRouter>

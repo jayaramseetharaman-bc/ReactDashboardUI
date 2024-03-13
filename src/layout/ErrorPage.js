@@ -1,37 +1,25 @@
 import React from 'react'
-import { CButton, CCard, CCardBody, CCardHeader, CCardTitle, CContainer } from '@coreui/react'
-import { useNavigate } from 'react-router-dom'
+import { CCol, CContainer, CRow } from '@coreui/react'
 
 const ErrorPage = () => {
-  const navigate = useNavigate()
-  const handleSignIn = () => {
-    navigate('/')
-  }
   return (
-    <>
-      <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
-        <CContainer>
-          <CCard className="text-center">
-            <CCardHeader>
-              {' '}
-              <CCardTitle className="font-bold text-gray-200 text-9xl">
-                401-Unauthorised issue
-              </CCardTitle>
-            </CCardHeader>
-            <CCardBody>
-              <CCardTitle>
-                {' '}
-                Access is allowed only for registered users. Please try to login again.
-              </CCardTitle>
-              <CButton className="btn-lg" color="link" onClick={handleSignIn}>
-                {' '}
-                Back to login
-              </CButton>{' '}
-            </CCardBody>
-          </CCard>
-        </CContainer>
-      </div>
-    </>
+    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+      <CContainer>
+        <CRow className="justify-content-center">
+          <CCol md={6}>
+            <div className="clearfix">
+              <h1 className="float-start display-3 me-4">401 Unauthorized</h1>
+              <h4 className="pt-3">Oops! You{"'"}re not allowed.</h4>
+              <p className="text-medium-emphasis float-start">
+                The page you are trying to access requires proper authorization. Please check your
+                credentials and try again. If you believe you should have access, please contact the
+                administrator.
+              </p>
+            </div>
+          </CCol>
+        </CRow>
+      </CContainer>
+    </div>
   )
 }
 

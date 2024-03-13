@@ -23,12 +23,26 @@ httpClient.interceptors.request.use(
   },
 )
 
+export function handleRedirectToErrorPage(path) {
+  window.location.href = `/#${path}`
+}
+
 // Response interceptor
 httpClient.interceptors.response.use(
   (response) => {
     return response
   },
   (error) => {
+    if (error.response) {
+      const { status } = error.response
+      if (status === 401) {
+        handleRedirectToErrorPage('/error')
+      } else if (status === 404) {
+        handleRedirectToErrorPage('/404')
+      } else if (status === 500) {
+        handleRedirectToErrorPage('/500')
+      }
+    }
     throw error
   },
 )
