@@ -277,7 +277,7 @@ const CreateUserForm = () => {
                     options={roles.map((role) => ({ value: role.roleId, label: role.roleName }))}
                     value={selectedRoles.map((roleId) => ({
                       value: roleId,
-                      label: roles.find((role) => role.roleId === roleId).roleName,
+                      label: roles.find((role) => role.roleId === roleId)?.roleName,
                     }))}
                     onChange={(selectedOptions) => {
                       const selectedRoleIds = selectedOptions.map((option) => option.value)
