@@ -249,88 +249,86 @@ function UserDetails() {
   return (
     <>
       <CCard className="mb-2">
-        <CCardHeader>
-          <CAccordion flush>
-            <CAccordionItem itemKey={1}>
-              <CAccordionHeader>Search</CAccordionHeader>
-              <CAccordionBody>
-                <div className="mb-3 me-5"></div>
-                <div className="d-flex flex-wrap align-items-center">
-                  <div className="mb-3 me-4 custom-select">
-                    <CInputGroup>
-                      <CInputGroupText id="addon-wrapping">
-                        <FaSearch />
-                      </CInputGroupText>
-                      <CFormInput
-                        className=""
-                        id="searchInput"
-                        placeholder="Search by Username and Email"
-                        aria-label="Search"
-                        aria-describedby="addon-wrapping"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </CInputGroup>
-                  </div>
-                  <div className="mb-3 me-4">
-                    <Select
-                      className="custom-search-select"
-                      placeholder="Search by Role"
-                      isMulti
-                      options={roles.map((role) => ({
-                        value: role.roleId,
-                        label: role.roleName,
-                      }))}
-                      value={selectedRoles.map((roleId) => ({
-                        value: roleId,
-                        label: roles.find((role) => role.roleId === roleId).roleName,
-                      }))}
-                      onChange={(selectedOptions) => {
-                        const selectedRoleIds = selectedOptions.map((option) => option.value)
-                        setSelectedRoles(selectedRoleIds)
-                      }}
+        <CAccordion>
+          <CAccordionItem itemKey={1}>
+            <CAccordionHeader>Search</CAccordionHeader>
+            <CAccordionBody>
+              <div className="mb-3 me-5"></div>
+              <div className="d-flex flex-wrap align-items-center">
+                <div className="mb-3 me-4 custom-select">
+                  <CInputGroup>
+                    <CInputGroupText id="addon-wrapping">
+                      <FaSearch />
+                    </CInputGroupText>
+                    <CFormInput
+                      className=""
+                      id="searchInput"
+                      placeholder="Search by Username and Email"
+                      aria-label="Search"
+                      aria-describedby="addon-wrapping"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                  </div>
-                  <div className="mb-3 me-4">
-                    <Select
-                      className="custom-search-select"
-                      placeholder="Search by Status"
-                      isSearchable
-                      isClearable
-                      options={[
-                        { value: 'active', label: 'Active' },
-                        { value: 'inactive', label: 'Inactive' },
-                      ]}
-                      value={
-                        selectedStatus
-                          ? {
-                              value: selectedStatus,
-                              label: selectedStatus === 'active' ? 'Active' : 'Inactive',
-                            }
-                          : null
-                      }
-                      onChange={(selectedOption) =>
-                        setSelectedStatus(selectedOption ? selectedOption.value : null)
-                      }
-                    />
-                  </div>
-                  <div className="ms-auto">
-                    <CButton
-                      color="primary"
-                      className="me-3"
-                      onClick={() => HandleSearchButtonClick()}
-                    >
-                      Search
-                    </CButton>
-                    <CButton color="primary" onClick={() => HandleClearButtonClick()}>
-                      Clear
-                    </CButton>
-                  </div>
+                  </CInputGroup>
                 </div>
-              </CAccordionBody>
-            </CAccordionItem>
-          </CAccordion>
-        </CCardHeader>
+                <div className="mb-3 me-4">
+                  <Select
+                    className="custom-search-select"
+                    placeholder="Search by Role"
+                    isMulti
+                    options={roles.map((role) => ({
+                      value: role.roleId,
+                      label: role.roleName,
+                    }))}
+                    value={selectedRoles.map((roleId) => ({
+                      value: roleId,
+                      label: roles.find((role) => role.roleId === roleId).roleName,
+                    }))}
+                    onChange={(selectedOptions) => {
+                      const selectedRoleIds = selectedOptions.map((option) => option.value)
+                      setSelectedRoles(selectedRoleIds)
+                    }}
+                  />
+                </div>
+                <div className="mb-3 me-4">
+                  <Select
+                    className="custom-search-select"
+                    placeholder="Search by Status"
+                    isSearchable
+                    isClearable
+                    options={[
+                      { value: 'active', label: 'Active' },
+                      { value: 'inactive', label: 'Inactive' },
+                    ]}
+                    value={
+                      selectedStatus
+                        ? {
+                            value: selectedStatus,
+                            label: selectedStatus === 'active' ? 'Active' : 'Inactive',
+                          }
+                        : null
+                    }
+                    onChange={(selectedOption) =>
+                      setSelectedStatus(selectedOption ? selectedOption.value : null)
+                    }
+                  />
+                </div>
+                <div className="ms-auto">
+                  <CButton
+                    color="primary"
+                    className="me-3"
+                    onClick={() => HandleSearchButtonClick()}
+                  >
+                    Search
+                  </CButton>
+                  <CButton color="primary" onClick={() => HandleClearButtonClick()}>
+                    Clear
+                  </CButton>
+                </div>
+              </div>
+            </CAccordionBody>
+          </CAccordionItem>
+        </CAccordion>
       </CCard>
       <CCard className="mb-4">
         <CCardHeader className="d-flex justify-content-between align-items-center">
